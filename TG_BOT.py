@@ -17,6 +17,7 @@ def get_data_from_google_sheets():                      #получает дан
 
 
 
+
 GOOGLE_SHEET_DATA = get_data_from_google_sheets()
 
 
