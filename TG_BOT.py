@@ -52,6 +52,7 @@ class Lesson:
         self.__room = new_room
 
 
+
 NULL_LESSON = Lesson(-1, "хз", "хз", "хз")
 
 
