@@ -16,6 +16,7 @@ def get_data_from_google_sheets():                      #получает дан
 GOOGLE_SHEET_DATA = get_data_from_google_sheets()
 
 
+
 class Lesson:
     def __init__(self, number, subject, teachers, rooms):
         self.__number = number
