@@ -278,7 +278,7 @@ def parse_lessons(x, y):                    #координаты начало �
 print(b.get_lessons())'''
 
 
-s = set()
+'''s = set()
 for x in range(9, 60, 10):
     for y in range(65, 65 + 15 + 1, 5):
         for i in parse_lessons(x, y):
@@ -299,4 +299,6 @@ print()
 
 
 for i in s:
-    print('"', i, '" : "', i, '",', sep = '')
+    print('"', i, '" : "', i, '",', sep = '')'''
+
+print(*GOOGLE_SHEET_DATA, sep='\n')
