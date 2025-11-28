@@ -19,7 +19,7 @@ def send_welcome(message):
 
 @bot.callback_query_handler(func=lambda call: True)
 def callback_answer(call):
-    if call.data == 'student': # если выбран ученик
+    if call.data == 'student': # если выбран школьник
         bot.send_message(call.message.chat.id, 'привет, школьник')
     elif call.data == 'teacher': # если выбран учитель
         bot.send_message(call.message.chat.id, 'привет, учитель')
