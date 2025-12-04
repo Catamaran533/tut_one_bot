@@ -2,7 +2,7 @@ import telebot
 from telebot import types
 bot = telebot.TeleBot(token='8275369590:AAG2CUbhj6Kf6qsCg3V3bAZp6Ve4XxcTp74') # бот - @UrokPlusBot
 
-# полезные доп значения
+# дополнительные значения
 grades = ['5мл', '6мл', '7мл', '8м', '8хб', '8г', '9м', '9хб', '9г', '10м', '10хб', '10г', '11м', '11хб', '11г'] # все классы
 waiting_grade = {} # ожидаем ли ввод класса в этом чате
 waiting_teacher = {} # ожидаем ли ввод фамилии в этом чате
