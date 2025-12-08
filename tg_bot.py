@@ -30,8 +30,9 @@ teachers = {
     'тарабукина', 'теслер', 'тишунин', 'травникова', 'туманова',
     'ханабиев', 'харсиева', 'холодилов', 'щавелев', 'щеглова'
 } # все учителя
+admins = {'ProArtem567', 'mishagrib', 'dzaicev'} # админы бота
 
-@bot.message_handler(commands=['start']) # /start
+@bot.message_handler(commands=['start']) # /start (не менять)
 def send_welcome(message):
     markup = types.InlineKeyboardMarkup() # кнопки
     site_button = types.InlineKeyboardButton('Открыть общее расписание', url='https://clck.ru/3QZjCY') # расписание
@@ -39,6 +40,9 @@ def send_welcome(message):
     student_role = types.InlineKeyboardButton('Ученик или родитель', callback_data='student') # выбор ученика
     teacher_role = types.InlineKeyboardButton('Учитель', callback_data='teacher') # выбор учителя
     markup.row(student_role, teacher_role)
+    if message.from_user.username in admins: # скрытая кнопка для админов
+        admin_button = types.InlineKeyboardButton('🔧 Админ-панель', callback_data='admin')
+        markup.row(admin_button)
     bot.send_message(
         message.chat.id,
         'Приветствую!\nВы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - <b>школьник(родитель школьника)</b> или <b>учитель</b>.',
@@ -46,7 +50,7 @@ def send_welcome(message):
         parse_mode='HTML'
     )
 
-@bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
+@bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок (не менять)
 def callback_answer(call):
     if call.data == 'student': # если выбран школьник
         bot.send_message(call.message.chat.id, 'Введите свой класс без пробелов (например, 9м, 11хб)')
@@ -54,6 +58,8 @@ def callback_answer(call):
     elif call.data == 'teacher': # если выбран учитель
         bot.send_message(call.message.chat.id, 'Введите свою фамилию без пробелов, регистр не важен. Например: "вдовиченко", "Облендер"')
         waiting_teacher[call.message.chat.id] = True # также запомниаем
+    elif call.data == 'admin': # если это админ
+        bot.send_message(call.message.chat.id, 'Привет, админ!')
     elif call.data.startswith('day_'): # выбран уже и день недели и класс
         arr = call.data.split('_')
         _, day, dop = arr # ничего, день, класс/учитель
