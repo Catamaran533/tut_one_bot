@@ -31,6 +31,7 @@ teachers = {
     'ханабиев', 'харсиева', 'холодилов', 'щавелев', 'щеглова'
 } # все учителя
 admins = {'ProArtem567', 'mishagrib', 'dzaicev'} # админы бота
+admins_chat_ids = set() # чаты с админами
 
 @bot.message_handler(commands=['start']) # /start (не менять)
 def send_welcome(message):
@@ -40,7 +41,8 @@ def send_welcome(message):
     student_role = types.InlineKeyboardButton('Ученик или родитель', callback_data='student') # выбор ученика
     teacher_role = types.InlineKeyboardButton('Учитель', callback_data='teacher') # выбор учителя
     markup.row(student_role, teacher_role)
-    if message.from_user.username in admins: # скрытая кнопка для админов
+    if message.from_user.username in admins: # скрытая кнопка для админов а также добавка в список чатов
+        admins_chat_ids.add(message.chat.id)
         admin_button = types.InlineKeyboardButton('🔧 Админ-панель', callback_data='admin')
         markup.row(admin_button)
     bot.send_message(
@@ -92,7 +94,8 @@ def grade_choice(message):
         # если ваще хрень какая то, то просим начать заново всё
         bot.reply_to(message, 'Пожалуйста, сначала выберите роль через команду "/start"')
 
-def send_days(chat_id, variable):  # функция выбора дня недели
+# функция выбора дня недели (не менять)
+def send_days(chat_id, variable):
     markup = types.InlineKeyboardMarkup()
     row1 = [
         types.InlineKeyboardButton("Пн", callback_data=f"day_mon_{variable}"),
@@ -111,5 +114,13 @@ def send_days(chat_id, variable):  # функция выбора дня неде
     ]
     markup.row(*row3)
     bot.send_message(chat_id, "Выберите день недели:", reply_markup=markup)
+
+# функция оповещения админов об ошибке
+def print_crush(crush_message: str):
+    for chat_id in admins_chat_ids:
+        try:
+            bot.send_message(chat_id, crush_message)
+        except:
+            pass
 
 bot.polling(none_stop=True)
