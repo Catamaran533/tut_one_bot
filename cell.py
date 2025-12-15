@@ -7,10 +7,13 @@ from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import google_token
 import consts
+import cell_cord
 from ForCrashes import *
 
 
-
+#Эта структура написана для удобного использования нами, да, гугл предоставляет структуру cell,
+#но она крайне не удобна, да и копаться в словаре списков и словарей, в которых тоже есть и списк и словари, желания
+#нет, лол
 
 class ColorRGB:
     def __init__(self, red=1.0, green=1.0, blue=1.0):
@@ -55,7 +58,8 @@ class ColorRGB:
 
 #cell_address - строка, обозначающая позицию ячейки в гугл-таблице, например, "A1"
 class Cell:
-    def __init__(self, cell_address, spreadsheet_id = consts.SPREADSHEET_ID, sheet_name = consts.SHEET_NAME):
+    def __init__(self, cell_coord, spreadsheet_id = consts.SPREADSHEET_ID, sheet_name = consts.SHEET_NAME):
+        cell_address = cell_coord.get_cell_address()
         try:                                        #Беру креды и радиус работы
             creds = google_token.create_token()
             service = build("sheets", "v4", credentials=creds)
@@ -68,7 +72,7 @@ class Cell:
             ).execute()
         except HttpError:
             crash_message = "Проверить доступ к Google Cloud Console, косяк в cell.py."
-            print_crush(crash_message)
+            print_crush(crash_message, HttpError)
             raise HttpError
 
         try:
@@ -85,12 +89,10 @@ class Cell:
             self.__color = color
         except IndexError:
             crash_message = f"Накосячил в модуле cell.py, проверить структуру ячейки, вышел за границы списка."
-            print_crush(crash_message)
-            raise IndexError
+            print_crush(crash_message, IndexError)
         except KeyError:
             crash_message = f"Накосячил в модуле cell.py, проверить структуру ячейки, обратился к несуществующему ключу."
-            print_crush(crash_message)
-            raise KeyError
+            print_crush(crash_message, KeyError)
 
 
     def get_text(self):
