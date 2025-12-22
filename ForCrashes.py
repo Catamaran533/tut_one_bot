@@ -1,9 +1,9 @@
-def print_crush(crush_message, error):
+def print_crash(crush_message):
     print(crush_message)
     #TODO должна также выводить ошибку мне в тг-боте, Миша, сделай статус разработчика в боте
     #TODO статус должен быть доступен только пользователям, кто правильно ввёл пароль
     #TODO (P. S. не забывай о функции hash())
 
 
-    raise error
+
 

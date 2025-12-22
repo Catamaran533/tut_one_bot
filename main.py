@@ -6,13 +6,8 @@ from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from googleapiclient.errors import HttpError
 import google_token
-import cell
-import cell_cord
+from cell import *
 
-a = cell_cord.CellCoord(1, 1)
 
-print(a.get_cell_address())
 
-b = cell.Cell(cell_cord.CellCoord(1, 1))
 
-print(b.get_text())

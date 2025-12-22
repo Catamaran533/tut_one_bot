@@ -1,106 +1,66 @@
-'''import os.path
+from cell_coord import *
 
-from google.auth.transport.requests import Request
-from google.oauth2.credentials import Credentials
-from google_auth_oauthlib.flow import InstalledAppFlow'''
-from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
-import google_token
-import consts
-import cell_cord
-from ForCrashes import *
+EPSILON = 0.00001
 
-
-#Эта структура написана для удобного использования нами, да, гугл предоставляет структуру cell,
-#но она крайне не удобна, да и копаться в словаре списков и словарей, в которых тоже есть и списк и словари, желания
-#нет, лол
 
 class ColorRGB:
-    def __init__(self, red=1.0, green=1.0, blue=1.0):
+    def __init__(self, red=1.0, green=1.0, blue=1.0):  # числа от 0 до 1
         self.__red = red
         self.__green = green
         self.__blue = blue
 
-
     def get_red(self):
         return self.__red
+
     def set_red(self, new_red):
         self.__red = new_red
 
     def get_green(self):
         return self.__green
+
     def set_green(self, new_green):
         self.__green = new_green
 
     def get_blue(self):
         return self.__blue
+
     def set_blue(self, new_blue):
         self.__blue = new_blue
 
-
-    def __eq__(self, other):                #==
+    def __eq__(self, other):  # ==
         colors = [self.__red, self.__green, self.__blue]
         other_colors = [other.get_red(), other.get_green(), other.get_blue()]
         for i in range(len(colors)):
-            if abs(colors[i] - other_colors[i]) > consts.EPSILON:
+            if abs(colors[i] - other_colors[i]) > EPSILON:
                 return False
         return True
 
-
-    def __ne__(self, other):                #!=
+    def __ne__(self, other):  # !=
         colors = ColorRGB(self.__red, self.__green, self.__blue)
         return not (colors == other)
 
 
+WHITE_COLOR = ColorRGB()
 
 
-
-
-#cell_address - строка, обозначающая позицию ячейки в гугл-таблице, например, "A1"
 class Cell:
-    def __init__(self, cell_coord, spreadsheet_id = consts.SPREADSHEET_ID, sheet_name = consts.SHEET_NAME):
-        cell_address = cell_coord.get_cell_address()
-        try:                                        #Беру креды и радиус работы
-            creds = google_token.create_token()
-            service = build("sheets", "v4", credentials=creds)
-
-            # Запрашиваю данные в ячейке
-            response = service.spreadsheets().get(
-                spreadsheetId=spreadsheet_id,
-                ranges=[f"{sheet_name}!{cell_address}"],
-                includeGridData=True
-            ).execute()
-        except HttpError:
-            crash_message = "Проверить доступ к Google Cloud Console, косяк в cell.py."
-            print_crush(crash_message, HttpError)
-            raise HttpError
-
-        try:
-            cell = response['sheets'][0]['data'][0]['rowData'][0]['values'][0]
-            text = cell.get('formattedValue', '')
-
-            # Цвет фона (по умолчанию белый), get просто на всякий пожарный стоит
-
-            background = cell.get('effectiveFormat', {}).get('backgroundColor', {})
-
-            color = ColorRGB(background.get('red', 1.0), background.get('green', 1.0), background.get('blue', 1.0))
-
-            self.__text = text
-            self.__color = color
-        except IndexError:
-            crash_message = f"Накосячил в модуле cell.py, проверить структуру ячейки, вышел за границы списка."
-            print_crush(crash_message, IndexError)
-        except KeyError:
-            crash_message = f"Накосячил в модуле cell.py, проверить структуру ячейки, обратился к несуществующему ключу."
-            print_crush(crash_message, KeyError)
-
+    def __init__(self, cell_coord, text, color):
+        self.__cell_coord = cell_coord
+        self.__text = text
+        self.__color = color
 
     def get_text(self):
         return self.__text
-    def set_text(self, new_text):
-        self.__text = new_text
 
     def get_color(self):
         return self.__color
-    def set_color(self, new_color):
-        self.__color = new_color
+
+    def get_cell_coord(self):
+        return self.__cell_coord
+
+    def __str__(self):          #Для дебага
+        return (
+                f"ADDRESS = '{self.__cell_coord.get_cell_address()}', \n"
+                f"TEXT = '''{self.__text}''', \n"
+                f"COLOR = ColorRGB({self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}))"
+        )
