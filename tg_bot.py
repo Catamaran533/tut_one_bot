@@ -32,6 +32,14 @@ teachers = {
 } # все учителя
 admins = {'ProArtem567', 'mishagrib', 'dzaicev'} # админы бота
 admins_chat_ids = set() # чаты с админами
+lessons = [
+    {"subject": "Предмет", "time": "9:15–9:55"},
+    {"subject": "Предмет", "time": "10:00–10:40"},
+    {"subject": "Предмет", "time": "10:55–11:35"},
+    {"subject": "Предмет", "time": "11:50–12:30"},
+    {"subject": "Предмет", "time": "13:00–13:40"},
+    {"subject": "Предмет", "time": "13:55–14:35"}
+] # для примера возьмём 6 уроков
 
 @bot.message_handler(commands=['start']) # /start (не менять)
 def send_welcome(message):
@@ -52,7 +60,7 @@ def send_welcome(message):
         parse_mode='HTML'
     )
 
-@bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок (не менять)
+@bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
     if call.data == 'student': # если выбран школьник
         bot.send_message(call.message.chat.id, 'Введите свой класс без пробелов (например, 9м, 11хб)')
@@ -64,14 +72,11 @@ def callback_answer(call):
         bot.send_message(call.message.chat.id, 'Привет, админ!')
     elif call.data.startswith('day_'): # выбран уже и день недели и класс
         arr = call.data.split('_')
-        _, day, dop = arr # ничего, день, класс/учитель
-        if dop in grades:
-            bot.send_message(call.message.chat.id, f'Вы выбрали расписание на <b>{days[day].lower()}</b> для класса <b>{dop}.</b>', parse_mode='HTML')
-        if dop in teachers:
-            bot.send_message(call.message.chat.id, f'Вы выбрали расписание на <b>{days[day].lower()}</b> для учителя <b>{dop.capitalize()}</b>', parse_mode='HTML')
+        _, day, target = arr # ничего, день, класс/учитель
+        send_schedule(call.message.chat.id, day, target) # пишем расписание
     bot.answer_callback_query(call.id) # убираем бесячий таймер на кнопках
 
-@bot.message_handler(func=lambda message: True) # выбор класса/личности
+@bot.message_handler(func=lambda message: True) # выбор класса/личности (не менять)
 def grade_choice(message):
     if message.chat.id in waiting_grade and waiting_grade[message.chat.id]:
         grade = message.text.lower()
@@ -88,7 +93,7 @@ def grade_choice(message):
             del waiting_teacher[message.chat.id] # удаляем этот чат из списка тех где ожидаем ввод фамилии
             send_days(message.chat.id, teacher) # просим выбрать день недели
         else:
-            bot.reply_to(message, 'Неправильно введена фамилия. Введите ещё раз без пробелов. Примеры: "Зачиняев", "Прадун"')
+            bot.reply_to(message, 'Неправильно введена фамилия. Введите ещё раз без пробелов. Примеры: "Зачиняев", "прадун"')
             # ждём ввода опять
     else:
         # если ваще хрень какая то, то просим начать заново всё
@@ -115,12 +120,36 @@ def send_days(chat_id, variable):
     markup.row(*row3)
     bot.send_message(chat_id, "Выберите день недели:", reply_markup=markup)
 
-# функция оповещения админов об ошибке
+# функция оповещения админов об ошибке (хз зачем, артем попросил)
 def print_crush(crush_message: str):
     for chat_id in admins_chat_ids:
         try:
             bot.send_message(chat_id, crush_message)
         except:
             pass
+
+# отправка расписания пользователю
+def send_schedule(chat_id, day_key, target):
+    day_name = days[day_key]
+    if target in grades: # для школьников
+        header = f"📅 Расписание на {day_name.lower()} для класса {target}:"
+        if day_key == 'sun':
+            bot.send_message(chat_id, f"{header}\n\nВ воскресенье занятий нет. Отдыхайте! ✨")
+            return
+        message = header + "\n\n"
+        for lesson in lessons:
+            message += f"<b>{lesson['subject']}</b>, {lesson['time']}, каб. 306\n"
+        bot.send_message(chat_id, message, parse_mode='HTML')
+    elif target in teachers: # для учителей
+        header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}:"
+        if day_key == 'sun':
+            bot.send_message(chat_id, f"{header}\n\nВ воскресенье занятий нет. Отдыхайте! ✨")
+            return
+        message = header + "\n\n"
+        for lesson in lessons:
+            message += f"<b>{lesson['subject']}</b> (9м), {lesson['time']}, каб. 306\n"
+        bot.send_message(chat_id, message, parse_mode='HTML')
+    else: # на всякий пожарный
+        bot.send_message(chat_id, "Не удалось определить роль. Попробуйте заново через /start")
 
 bot.polling(none_stop=True)
