@@ -46,7 +46,7 @@ def send_welcome(message):
     markup = types.InlineKeyboardMarkup() # кнопки
     site_button = types.InlineKeyboardButton('Открыть общее расписание', url='https://clck.ru/3QZjCY') # расписание
     markup.row(site_button)
-    student_role = types.InlineKeyboardButton('Ученик или родитель', callback_data='student') # выбор ученика
+    student_role = types.InlineKeyboardButton('Ученик/родитель', callback_data='student') # выбор ученика
     teacher_role = types.InlineKeyboardButton('Учитель', callback_data='teacher') # выбор учителя
     markup.row(student_role, teacher_role)
     if message.from_user.username in admins: # скрытая кнопка для админов а также добавка в список чатов
