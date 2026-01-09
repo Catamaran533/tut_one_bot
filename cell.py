@@ -64,3 +64,5 @@ class Cell:
                 f"TEXT = '''{self.__text}''', \n"
                 f"COLOR = ColorRGB({self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}))"
         )
+
+NONE_CELL = Cell(CellCoord(-1, -1), "", ColorRGB())

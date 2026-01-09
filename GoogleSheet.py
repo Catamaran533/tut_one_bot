@@ -140,6 +140,8 @@ SHEET_NAME = "актуальное"
 START_RANGE = CellCoord('A', 1)
 END_RANGE = CellCoord('CF', 70)
 
-'''s = Sheet(SPREADSHEET_ID, SHEET_NAME, START_RANGE, END_RANGE);
 
-print(s.get_cell(CellCoord('J', 27)))'''
+def get_school_table_sheet():
+    return Sheet(SPREADSHEET_ID, SHEET_NAME, START_RANGE, END_RANGE)
+
+SCHOOL_TABLE = get_school_table_sheet()
