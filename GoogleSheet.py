@@ -145,3 +145,5 @@ def get_school_table_sheet():
     return Sheet(SPREADSHEET_ID, SHEET_NAME, START_RANGE, END_RANGE)
 
 SCHOOL_TABLE = get_school_table_sheet()
+
+

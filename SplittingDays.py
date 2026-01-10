@@ -27,6 +27,9 @@ LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS = {
 
 }
 
+def get_lesson_time(class_name: str, lesson_idx: int):
+    return LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS[class_name][1].get_lesson_time(lesson_idx)
+
 
 NUMBER_COORD_FOR_DAY_OF_THE_WEEK = {
     'ПН': 10,
@@ -42,21 +45,18 @@ NUMBER_COORD_FOR_DAY_OF_THE_WEEK = {
 
 
 def get_day(student_class: str, day_of_the_week: str):
-    l = [[NONE_CELL] * 4 for _ in range(MAX_LESSONS_PER_DAY + 1)]
+    l = [[NONE_CELL] * 4 for _ in range(MAX_LESSONS_PER_DAY)]
 
     cell_coord = CellCoord(LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS[student_class][0],
                            NUMBER_COORD_FOR_DAY_OF_THE_WEEK[day_of_the_week])
 
-    l[0][0] = SCHOOL_TABLE.get_cell(cell_coord)
 
     for i in range(MAX_LESSONS_PER_DAY):
         cell_coord.add_val_to_number_coord(1)
         for j in range(4):
-            l[i + 1][j] = SCHOOL_TABLE.get_cell(cell_coord)
+            l[i][j] = SCHOOL_TABLE.get_cell(cell_coord)
             cell_coord.add_val_to_letters_coord(1)
         cell_coord.add_val_to_letters_coord(-4)
 
     return l
 
-
-#print(*get_day("11м", "ВТ"), sep = '\n')

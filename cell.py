@@ -39,6 +39,9 @@ class ColorRGB:
         colors = ColorRGB(self.__red, self.__green, self.__blue)
         return not (colors == other)
 
+    def __str__(self):
+        return f"[{self.__red}, {self.__green}, {self.__blue}]"
+
 
 WHITE_COLOR = ColorRGB()
 
