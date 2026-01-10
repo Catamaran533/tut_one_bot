@@ -12,7 +12,7 @@ from GoogleSheet import *
 a = SCHOOL_TABLE.get_cell(CellCoord('E', 11))
 b = SCHOOL_TABLE.get_cell(CellCoord('E', 12))
 print(a.get_color(), b.get_color())
-
+print([a.get_text(), b.get_text()])
 
 
 

@@ -89,6 +89,12 @@ class Sheet:
 
 
         color = ColorRGB()
+        color1 = ColorRGB()
+        color2 = ColorRGB()
+        color3 = ColorRGB()
+        color4 = ColorRGB()
+
+
 
         if cell_data:
 
@@ -100,7 +106,7 @@ class Sheet:
                     red = bg.get('red', 1.0)
                     green = bg.get('green', 1.0)
                     blue = bg.get('blue', 1.0)
-                    color = ColorRGB(red, green, blue)
+                    color1 = ColorRGB(red, green, blue)
                 elif 'backgroundColorStyle' in eff_format:
                     bg_style = eff_format['backgroundColorStyle']
                     if 'rgbColor' in bg_style:
@@ -108,7 +114,7 @@ class Sheet:
                         red = rgb.get('red', 1.0)
                         green = rgb.get('green', 1.0)
                         blue = rgb.get('blue', 1.0)
-                        color = ColorRGB(red, green, blue)
+                        color2 = ColorRGB(red, green, blue)
 
 
 
@@ -119,7 +125,7 @@ class Sheet:
                     red = bg.get('red', 1.0)
                     green = bg.get('green', 1.0)
                     blue = bg.get('blue', 1.0)
-                    color = ColorRGB(red, green, blue)
+                    color3 = ColorRGB(red, green, blue)
                 elif 'backgroundColorStyle' in user_format:
                     bg_style = user_format['backgroundColorStyle']
                     if 'rgbColor' in bg_style:
@@ -127,8 +133,16 @@ class Sheet:
                         red = rgb.get('red', 1.0)
                         green = rgb.get('green', 1.0)
                         blue = rgb.get('blue', 1.0)
-                        color = ColorRGB(red, green, blue)
+                        color4 = ColorRGB(red, green, blue)
 
+        if (color1 != WHITE_COLOR):
+            color = color1
+        elif (color2 != WHITE_COLOR):
+            color = color2
+        elif (color3 != WHITE_COLOR):
+            color = color3
+        else:
+            color = color4
 
         return Cell(cell_coord, text, color)
 
