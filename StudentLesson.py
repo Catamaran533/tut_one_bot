@@ -95,7 +95,7 @@ class StudentDay:
 
             is_same_in_two_groups = False
             #TODO отдебажить
-            print("debug color", l[lesson_idx][0].get_color(), l[lesson_idx][2].get_color(), lesson_idx + 1)
+            #print("debug color", l[lesson_idx][0].get_color(), l[lesson_idx][2].get_color(), lesson_idx + 1)
             if (l[lesson_idx][0].get_color() == l[lesson_idx][2].get_color()):
                 is_same_in_two_groups = True
 
@@ -140,7 +140,7 @@ class StudentDay:
                 lessons[lesson_idx + 1][1] = lessons[lesson_idx][1]
 
 
-            lesson_idx +=need_to_add_to_lesson_idx
+            lesson_idx += need_to_add_to_lesson_idx
 
         self.__lessons = lessons
 

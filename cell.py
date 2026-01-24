@@ -47,10 +47,20 @@ WHITE_COLOR = ColorRGB()
 
 
 class Cell:
-    def __init__(self, cell_coord, text, color):
+    def __init__(self, cell_coord, text, color, merge_start_cell_coord=None, merge_end_cell_coord=None):
         self.__cell_coord = cell_coord
         self.__text = text
         self.__color = color
+
+        if merge_start_cell_coord is None:
+            self.__merge_start_cell_coord = cell_coord
+        else:
+            self.__merge_start_cell_coord = merge_start_cell_coord
+
+        if merge_end_cell_coord is None:
+            self.__merge_end_cell_coord = cell_coord
+        else:
+            self.__merge_end_cell_coord = merge_end_cell_coord
 
     def get_text(self):
         return self.__text
@@ -61,11 +71,54 @@ class Cell:
     def get_cell_coord(self):
         return self.__cell_coord
 
-    def __str__(self):          #Для дебага
-        return (
-                f"ADDRESS = '{self.__cell_coord.get_cell_address()}', \n"
-                f"TEXT = '''{self.__text}''', \n"
-                f"COLOR = ColorRGB({self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}))"
+    def get_merge_start_cell_coord(self):
+        return self.__merge_start_cell_coord
+
+    def get_merge_end_cell_coord(self):
+        return self.__merge_end_cell_coord
+
+    def set_merge_range(self, merge_start_cell_coord, merge_end_cell_coord):
+        self.__merge_start_cell_coord = merge_start_cell_coord
+        self.__merge_end_cell_coord = merge_end_cell_coord
+
+
+    def is_merge_main_cell(self):
+        return self.__cell_coord.get_cell_address() == self.__merge_start_cell_coord.get_cell_address()
+
+    def get_merged_cells_list(self):
+
+        ans = []
+
+        start_col = self.__merge_start_cell_coord.get_letters_coord()
+        end_col = self.__merge_end_cell_coord.get_letters_coord()
+        start_row = self.__merge_start_cell_coord.get_numbers_coord()
+        end_row = self.__merge_end_cell_coord.get_numbers_coord()
+
+        for col in range(start_col, end_col + 1):
+            for row in range(start_row, end_row + 1):
+                ans.append(CellCoord(col, row))
+
+        return ans
+
+    def __str__(self):
+        l = []
+        try:
+            merged_cells = self.get_merged_cells_list()
+            for cell_coord in merged_cells:
+                l.append(cell_coord.get_cell_address())
+        except Exception as e:
+            l = [f"Ошибка при получении списка объединенных ячеек: {e}"]
+            print_crash(f"Ошибка при получении списка объединенных ячеек: {e}")
+
+        ans = (
+            f"ADDRESS = '{self.__cell_coord.get_cell_address()}', \n"
+            f"TEXT = '''{self.__text}''', \n"
+            f"COLOR = ColorRGB({self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}), \n"
+            f"MERGE_RANGE = {l}, \n"
+            f"IS_MERGED_MAIN_CELL = {self.is_merge_main_cell()} \n"
         )
+
+        return ans
+
 
 NONE_CELL = Cell(CellCoord(-1, -1), "", ColorRGB())

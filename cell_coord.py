@@ -33,14 +33,14 @@ class CellCoord:
         elif (type(letters_or_number) == int):
             self.__letters_coord = letters_or_number
         else:
-            crush_message = "Косяк в CellCoord. Чё за тип вы передали в letters_or_number?"
+            crush_message = f"Косяк в CellCoord. Чё за тип вы передали в letters_or_number? {letters_or_number}"
             print_crash(crush_message)
 
 
         if (type(number) == int):
             self.__number_coord = number
         else:
-            crush_message = "Косяк в CellCoord. Чё за тип вы передали в number?"
+            crush_message = f"Косяк в CellCoord. Чё за тип вы передали в number? {number}"
             print_crash(crush_message)
 
     def add_val_to_letters_coord(self, x):
@@ -52,10 +52,17 @@ class CellCoord:
     def add_val_to_number_coord(self, x):
         self.__number_coord += x
         if (self.__number_coord < 1):
-            crush_message = "Косяк в CellCoord. letters_cord стал < 1. add_val_to_number_coord"
+            crush_message = "Косяк в CellCoord. number_coord стал < 1. add_val_to_number_coord"
             print(crush_message, IndexError)
 
     def get_cell_address(self):
         return convert_numbers_to_letters[self.__letters_coord] + str(self.__number_coord)
 
+    def get_letters_coord(self):
+        return self.__letters_coord
 
+    def get_numbers_coord(self):
+        return self.__number_coord
+
+    def __str__(self):
+        return self.get_cell_address()
