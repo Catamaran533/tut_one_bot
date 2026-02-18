@@ -191,4 +191,3 @@ def get_school_table_sheet():
 
 SCHOOL_TABLE = get_school_table_sheet()
 
-print(SCHOOL_TABLE.get_cell(CellCoord("AL", 32)))
