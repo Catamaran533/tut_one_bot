@@ -2,6 +2,7 @@ from googleapiclient.discovery import build
 from google_token import *
 from cell_coord import *
 from cell import *
+from ForCrashes import *
 
 
 class Sheet:
@@ -11,8 +12,8 @@ class Sheet:
         self.__sheet_name = sheet_name
         self.__start_range = start_range
         self.__end_range = end_range
-        self.__merges_info = {}         # ключ - адрес ячейки
-        self.__download_data()          # значение - (merge_start_cell_coord, merge_end_cell_coord)
+        self.__merges_info = {}
+        self.__download_data()
 
     def __download_data(self):
         try:
@@ -21,7 +22,6 @@ class Sheet:
 
             range_name = f"{self.__sheet_name}!{self.__start_range.get_cell_address()}:{self.__end_range.get_cell_address()}"
 
-            # Наш запрос
             sheet = service.spreadsheets()
             result = sheet.get(
                 spreadsheetId=self.__spreadsheet_id,
@@ -40,7 +40,7 @@ class Sheet:
                         end_col_idx = merge_range.get('endColumnIndex', 0)
 
                         merge_start_cell_coord = CellCoord(start_col_idx + 1, start_row_idx + 1)
-                        merge_end_cell_coord = CellCoord(end_col_idx, end_row_idx)  # Уже правильные индексы
+                        merge_end_cell_coord = CellCoord(end_col_idx, end_row_idx)
 
                         for row in range(start_row_idx, end_row_idx):
                             for col in range(start_col_idx, end_col_idx):
@@ -50,7 +50,6 @@ class Sheet:
                                 self.__merges_info[cell_coord.get_cell_address()] = (
                                     merge_start_cell_coord, merge_end_cell_coord)
 
-                # Загружаем данные ячеек
                 if 'data' in sheet_data and len(sheet_data['data']) > 0:
                     grid_data = sheet_data['data'][0]
 
@@ -67,10 +66,7 @@ class Sheet:
 
                                         cell_coord = CellCoord(abs_col, abs_row)
                                         cell_address = cell_coord.get_cell_address()
-
                                         self.__cells[cell_address] = cell_data
-
-            # print(f"Загрузил {len(self.__cells)} ячеек из листа '{self.__sheet_name}'")
 
         except Exception as e:
             print_crash(f"Ошибка при загрузке данных из Google Sheets: {e}")
@@ -125,7 +121,7 @@ class Sheet:
                 elif 'boolValue' in user_value:
                     text = str(user_value['boolValue'])
 
-        color = ColorRGB()
+        color = WHITE_COLOR
         color1 = ColorRGB()
         color2 = ColorRGB()
         color3 = ColorRGB()
@@ -166,19 +162,20 @@ class Sheet:
                         blue = rgb.get('blue', 1.0)
                         color4 = ColorRGB(red, green, blue)
 
-        if (color1 != WHITE_COLOR):
+        if color1 != WHITE_COLOR:
             color = color1
-        elif (color2 != WHITE_COLOR):
+        elif color2 != WHITE_COLOR:
             color = color2
-        elif (color3 != WHITE_COLOR):
+        elif color3 != WHITE_COLOR:
             color = color3
         else:
             color = color4
 
-        return Cell(cell_coord, text, color, merge_start_cell_coord, merge_end_cell_coord)
+        # ВАЖНО: передаём копию координат
+        return Cell(cell_coord.copy(), text, color, merge_start_cell_coord, merge_end_cell_coord)
 
 
-SPREADSHEET_ID = "1wyvz0Ed_SqA5AjClYI6KJd6rrKxO4c1FZu0Mn1sBGC4"
+SPREADSHEET_ID = "1oGQz-SCHoGgO0b-B0PwbbuaLxjf1bnHBX9eQjiISphE"
 SHEET_NAME = "актуальное"
 
 START_RANGE = CellCoord('A', 1)
@@ -190,4 +187,3 @@ def get_school_table_sheet():
 
 
 SCHOOL_TABLE = get_school_table_sheet()
-

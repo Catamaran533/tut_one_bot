@@ -1,10 +1,11 @@
 from cell_coord import *
+from ForCrashes import *
 
 EPSILON = 0.00001
 
 
 class ColorRGB:
-    def __init__(self, red=1.0, green=1.0, blue=1.0):  # числа от 0 до 1
+    def __init__(self, red=1.0, green=1.0, blue=1.0):
         self.__red = red
         self.__green = green
         self.__blue = blue
@@ -28,6 +29,8 @@ class ColorRGB:
         self.__blue = new_blue
 
     def __eq__(self, other):  # ==
+        if not isinstance(other, ColorRGB):
+            return False
         colors = [self.__red, self.__green, self.__blue]
         other_colors = [other.get_red(), other.get_green(), other.get_blue()]
         for i in range(len(colors)):
@@ -36,8 +39,7 @@ class ColorRGB:
         return True
 
     def __ne__(self, other):  # !=
-        colors = ColorRGB(self.__red, self.__green, self.__blue)
-        return not (colors == other)
+        return not self.__eq__(other)
 
     def __str__(self):
         return f"[{self.__red}, {self.__green}, {self.__blue}]"
@@ -81,12 +83,10 @@ class Cell:
         self.__merge_start_cell_coord = merge_start_cell_coord
         self.__merge_end_cell_coord = merge_end_cell_coord
 
-
     def is_merge_main_cell(self):
         return self.__cell_coord.get_cell_address() == self.__merge_start_cell_coord.get_cell_address()
 
     def get_merged_cells_list(self):
-
         ans = []
 
         start_col = self.__merge_start_cell_coord.get_letters_coord()
@@ -117,8 +117,8 @@ class Cell:
             f"MERGE_RANGE = {l}, \n"
             f"IS_MERGED_MAIN_CELL = {self.is_merge_main_cell()} \n"
         )
-
         return ans
+
 
 
 NONE_CELL = Cell(CellCoord(-1, -1), "", ColorRGB())

@@ -1,11 +1,8 @@
-#тут будет просто подготовка (в виде разбиения на дни) таблицы для разбиения на дни
-#То есть просто просто словарь списков по дням неделям
-
 from GoogleSheet import *
 from WorkingTime import *
+from cell_coord import *
 
-
-#Да я вручную проставлял, я псих.
+# Да я вручную проставлял, я псих.
 LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS = {
     "5мл":   ['E',  WORKING_TIME1],
     "6мл":   ['J',  WORKING_TIME1],
@@ -24,7 +21,6 @@ LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS = {
     "9г":    ['BS', WORKING_TIME3],
     "10г":   ['BX', WORKING_TIME3],
     "11г":   ['CC', WORKING_TIME3],
-
 }
 
 def get_lesson_time(class_name: str, lesson_idx: int):
@@ -39,24 +35,16 @@ NUMBER_COORD_FOR_DAY_OF_THE_WEEK = {
     'ПТ': 50,
     'СБ': 60,
     'ВС': 70,
-
 }
 
-
-
 def get_day(student_class: str, day_of_the_week: str):
-    l = [[NONE_CELL] * 4 for _ in range(MAX_LESSONS_PER_DAY)]
-
+    l = [[NONE_CELL for _ in range(4)] for _ in range(MAX_LESSONS_PER_DAY)]
     cell_coord = CellCoord(LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS[student_class][0],
                            NUMBER_COORD_FOR_DAY_OF_THE_WEEK[day_of_the_week])
-
-
     for i in range(MAX_LESSONS_PER_DAY):
-        cell_coord.add_val_to_number_coord(1)
+        cell_coord = cell_coord.add_val_to_number_coord(1)
         for j in range(4):
             l[i][j] = SCHOOL_TABLE.get_cell(cell_coord)
-            cell_coord.add_val_to_letters_coord(1)
-        cell_coord.add_val_to_letters_coord(-4)
-
+            cell_coord = cell_coord.add_val_to_letters_coord(1)
+        cell_coord = cell_coord.add_val_to_letters_coord(-4)
     return l
-

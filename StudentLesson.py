@@ -1,12 +1,8 @@
-from SplittingDays import *
-from consts import MAP_WITH_TEACHERS_ABBREVIATION, MAP_WITH_TEACHERS_NAMES
-
-
-
+from consts import *
 
 
 class StudentLesson:
-    def __init__(self, lesson_name: str, teachers: list, cabs: list, time: str):           # в конструктор передаем только строки или списки строк
+    def __init__(self, lesson_name: str, teachers: list, cabs: list, time: str):
         self.__lesson_name = lesson_name
         self.__teachers = teachers
         self.__cabs = cabs
@@ -23,8 +19,6 @@ class StudentLesson:
 
     def get_time(self):
         return self.__time
-
-
 
     def set_lesson_name(self, new_name: str):
         self.__lesson_name = new_name
@@ -49,7 +43,7 @@ DAYS_OF_THE_WEEK = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
 CLASSES = ["5мл", "6мл", "7мл", "8м", "9м", "10м", "11м", "8хб", "9хб", "10хб", "11хб", "8г", "9г", "10г", "11г"]
 
 
-def remove_non_alphabetic_filter(text: str):        # Фильтрует только буквенные символы
+def remove_non_alphabetic_filter(text: str):
     return ''.join(filter(str.isalpha, text))
 
 def get_lesson_name_and_teachers(text: str):
@@ -57,11 +51,11 @@ def get_lesson_name_and_teachers(text: str):
     teachers = []
     for i in text.split():
         new_i = remove_non_alphabetic_filter(i)
-        if (new_i.istitle()):
+        if new_i.istitle():
             new_i = new_i.lower()
-            if (new_i in MAP_WITH_TEACHERS_ABBREVIATION.keys()):
+            if new_i in MAP_WITH_TEACHERS_ABBREVIATION:
                 teachers.append(MAP_WITH_TEACHERS_ABBREVIATION[new_i].capitalize())
-            elif (new_i in MAP_WITH_TEACHERS_NAMES):
+            elif new_i in MAP_WITH_TEACHERS_NAMES:
                 teachers.append(MAP_WITH_TEACHERS_NAMES[new_i].capitalize())
             else:
                 lesson_name += i
@@ -69,14 +63,5 @@ def get_lesson_name_and_teachers(text: str):
         else:
             lesson_name += i
             lesson_name += ' '
-    lesson_name.rstrip()
+    lesson_name = lesson_name.rstrip()
     return [lesson_name, teachers]
-
-
-
-
-
-
-
-
-
