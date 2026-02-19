@@ -2,7 +2,7 @@ from GoogleSheet import *
 from WorkingTime import *
 from cell_coord import *
 
-# Да я вручную проставлял, я псих.
+# Да, я вручную проставлял, я псих.
 LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS = {
     "5мл":   ['E',  WORKING_TIME1],
     "6мл":   ['J',  WORKING_TIME1],
@@ -21,6 +21,26 @@ LETTER_COORD_AND_WORKING_TIME_FOR_EACH_CLASS = {
     "9г":    ['BS', WORKING_TIME3],
     "10г":   ['BX', WORKING_TIME3],
     "11г":   ['CC', WORKING_TIME3],
+}
+
+WORKING_TIME_FOR_EACH_CLASS = {
+    "5мл":   WORKING_TIME1,
+    "6мл":   WORKING_TIME1,
+    "7мл":   WORKING_TIME1,
+    "8м":    WORKING_TIME1,
+
+    "9м":    WORKING_TIME2,
+    "10м":   WORKING_TIME2,
+    "11м":   WORKING_TIME2,
+    "8хб":   WORKING_TIME2,
+    "9хб":   WORKING_TIME2,
+    "10хб":  WORKING_TIME2,
+    "11хб":  WORKING_TIME2,
+
+    "8г":    WORKING_TIME3,
+    "9г":    WORKING_TIME3,
+    "10г":   WORKING_TIME3,
+    "11г":   WORKING_TIME3,
 }
 
 def get_lesson_time(class_name: str, lesson_idx: int):
