@@ -171,7 +171,6 @@ class Sheet:
         else:
             color = color4
 
-        # ВАЖНО: передаём копию координат
         return Cell(cell_coord.copy(), text, color, merge_start_cell_coord, merge_end_cell_coord)
 
 

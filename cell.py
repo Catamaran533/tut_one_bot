@@ -42,7 +42,7 @@ class ColorRGB:
         return not self.__eq__(other)
 
     def __str__(self):
-        return f"[{self.__red}, {self.__green}, {self.__blue}]"
+        return f"ColorRGB({self.__red}, {self.__green}, {self.__blue})"
 
 
 WHITE_COLOR = ColorRGB()
@@ -113,7 +113,7 @@ class Cell:
         ans = (
             f"ADDRESS = '{self.__cell_coord.get_cell_address()}', \n"
             f"TEXT = '''{self.__text}''', \n"
-            f"COLOR = ColorRGB({self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}), \n"
+            f"COLOR = {self.__color.get_red():.2f}, {self.__color.get_green():.2f}, {self.__color.get_blue():.2f}, \n"
             f"MERGE_RANGE = {l}, \n"
             f"IS_MERGED_MAIN_CELL = {self.is_merge_main_cell()} \n"
         )
