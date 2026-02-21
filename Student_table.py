@@ -7,7 +7,7 @@ from Teachers_by_colors import get_teacher_by_color, have_color
 HORIZONTAL_TABLE_SIZE = 4
 MAX_LESSONS_PER_DAY = 8
 
-BAD_SYMBOLS = [";", ":", "()", "+", "->", "<-"]
+BAD_SYMBOLS = [";", ":", "(", ")", "+", "->", "<-"]
 
 def get_teachers(text: str):
     for i in BAD_SYMBOLS:
@@ -49,7 +49,10 @@ def get_lesson(text: str):
     return lesson
 
 def get_cabs(text: str):
-    return text.split()
+    for i in BAD_SYMBOLS:
+        text = text.replace(i, ' ')
+    text = text.split()
+    return text
 
 
 class StudentDay:
@@ -66,7 +69,7 @@ class StudentDay:
             if len(class_table[lesson_idx][0].get_teachers()) == 0 and len(class_table[lesson_idx][0].get_lesson_name()) != 0 and have_color(l[lesson_idx][0].get_color()):
                 class_table[lesson_idx][0].set_teachers([get_teacher_by_color(l[lesson_idx][0].get_color())])
 
-            if len(class_table[lesson_idx][1].get_teachers()) == 0 and len(class_table[lesson_idx][1].get_lesson_name()) != 0 and have_color(l[lesson_idx][0].get_color()):
+            if len(class_table[lesson_idx][1].get_teachers()) == 0 and len(class_table[lesson_idx][1].get_lesson_name()) != 0 and have_color(l[lesson_idx][2].get_color()):
                 class_table[lesson_idx][1].set_teachers([get_teacher_by_color(l[lesson_idx][2].get_color())])
 
             class_table[lesson_idx][0].set_time(WORKING_TIME_FOR_EACH_CLASS[class_name].get_lesson_time(lesson_idx))

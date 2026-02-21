@@ -55,20 +55,6 @@ def get_teachers_and_colors():
     SCHOOL_TABLE = get_school_table_sheet()
 
 
-    for class_name in CLASSES:
-        for day_of_the_week in DAYS_OF_THE_WEEK:
-            l = get_day(class_name, day_of_the_week)
-            for i in range(MAX_LESSONS_PER_DAY):
-                for j in [0, 2]:
-                    teachers = get_teachers_in_string(l[i][j].get_text())
-                    color = l[i][j].get_color()
-                    if len(teachers) == 1:
-                        for k in colors_and_teachers:
-                            if (k[0] == color):
-                                break
-                        else:           #Да, это else к циклу))))))))
-                            colors_and_teachers.append([color, teachers[0]])
-
     return colors_and_teachers
 
 COLORS_AND_TEACHERS = []
