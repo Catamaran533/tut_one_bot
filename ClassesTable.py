@@ -1,4 +1,5 @@
 from Student_table import *
+import SplittingDays
 DAYS_OF_THE_WEEK = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
 CLASSES = ["5мл", "6мл", "7мл", "8м", "9м", "10м", "11м", "8хб", "9хб", "10хб", "11хб", "8г", "9г", "10г", "11г"]
 MAX_LESSONS_PER_DAY = 8
@@ -18,6 +19,7 @@ class ClassesTable:
     def update(self):               #возвращает список классов и дней неделей которых надо оповестить об изменении
         global SCHOOL_TABLE
         SCHOOL_TABLE = get_school_table_sheet()
+        SplittingDays.SCHOOL_TABLE = SCHOOL_TABLE
         new_classes = dict()
         for class_name in CLASSES:
             new_classes[class_name] = dict()

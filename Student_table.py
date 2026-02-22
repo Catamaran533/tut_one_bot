@@ -98,6 +98,20 @@ class StudentDay:
     def get_cabs(self, lesson_idx: int, group_idx: int):
         return self.__class_table[lesson_idx][group_idx].get_cabs()
 
+    def get_class_table(self):
+        return self.__class_table
+
+    def __eq__(self, other):
+        for i in range(MAX_LESSONS_PER_DAY):
+            for j in [0, 1]:
+                if (self.__class_table[i][j] != other.get_class_table()[i][j]):
+                    return False
+        return True
+
+    def __ne__(self, other):
+        return not (self == other)
+
+
 '''#Чутка тестов
 class_name = "11м"
 day_of_the_week = "ВТ"

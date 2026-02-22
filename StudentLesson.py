@@ -36,6 +36,16 @@ class StudentLesson:
         s = "StudentLesson{" + f"{self.__lesson_name}, {self.__teachers}, {self.__cabs}, {self.__time}" + "}"
         return s
 
+    def __eq__(self, other):
+        ans = [self.__lesson_name == other.get_lesson_name(),
+               self.__teachers == other.get_teachers(),
+               self.__cabs == other.get_cabs(),
+               self.__time == other.get_time()]
+        return sum(ans) == len(ans)
+
+    def __ne__(self, other):
+        return not (self == other)
+
 
 NONE_STUDENT_LESSON = StudentLesson("", [], [], "")
 

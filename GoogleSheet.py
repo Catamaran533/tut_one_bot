@@ -174,7 +174,9 @@ class Sheet:
         return Cell(cell_coord.copy(), text, color, merge_start_cell_coord, merge_end_cell_coord)
 
 
-SPREADSHEET_ID = "1wyvz0Ed_SqA5AjClYI6KJd6rrKxO4c1FZu0Mn1sBGC4"
+
+SPREADSHEET_ID = "1wyvz0Ed_SqA5AjClYI6KJd6rrKxO4c1FZu0Mn1sBGC4"         #Настоящее
+#SPREADSHEET_ID = "1oGQz-SCHoGgO0b-B0PwbbuaLxjf1bnHBX9eQjiISphE"         #Тестовое
 SHEET_NAME = "актуальное"
 
 START_RANGE = CellCoord('A', 1)
