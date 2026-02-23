@@ -6,6 +6,9 @@ MAX_LESSONS_PER_DAY = 8
 
 class ClassesTable:
     def __init__(self):
+        global SCHOOL_TABLE
+        SCHOOL_TABLE = get_school_table_sheet()
+        SplittingDays.SCHOOL_TABLE = SCHOOL_TABLE
         classes = dict()
         for class_name in CLASSES:
             classes[class_name] = dict()
