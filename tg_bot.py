@@ -2,6 +2,8 @@ from bot_consts import *
 import bot_functions
 import threading
 import time
+from bot_functions import send_schedule
+
 
 def background_update():
     while True:
@@ -19,12 +21,14 @@ def background_update():
                                 f"⚠️ <b>Внимание!</b>\nРасписание на <b>{day_cuts_reverse[ch_day]}</b> изменилось!",
                                 parse_mode='HTML'
                             )
+                            send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id)
                         except:
                             pass # если бот заблокан
         except:
             pass
 
 schedule.update()
+print('Расписание получено')
 update_thread = threading.Thread(target=background_update, daemon=True)
 update_thread.start()
 

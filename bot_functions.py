@@ -116,7 +116,33 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
-    if message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
+    if message.text.lower() == 'обновить' and message.from_user.username in admins:
+        changes = schedule.update()
+        bot.reply_to(
+            message,
+            'Привет, информация о расписание была обновлена.'
+        )
+        if len(changes) > 0:
+            for chat_id, full_id in user_class.items():
+                only_class = full_id.split('_')[0]
+                for change in changes:
+                    ch_class, ch_day = change
+                    if only_class == ch_class:
+                        try:
+                            bot.send_message(
+                                chat_id,
+                                f"⚠️ <b>Внимание!</b>\nРасписание на <b>{day_cuts_reverse[ch_day]}</b> изменилось!",
+                                parse_mode='HTML'
+                            )
+                            send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id)
+                        except:
+                            pass  # если бот заблокан
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Расписание не изменилось.'
+            )
+    elif message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
         grade = message.text.lower().replace(' ', '')
         if grade in grades:
             del waiting_grade[message.chat.id] # удаляем этот чат из списка тех где ожидаем ввод класса
@@ -183,7 +209,7 @@ def send_schedule(chat_id, day_key, variable):
             if lesson == '': continue
             lesson_time = result.get_time(i, group)
             lesson_rooms = result.get_cabs(i, group)
-            message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {lesson_rooms[0]}\n"
+            message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
         bot.send_message(chat_id, message, parse_mode='HTML')
     elif target in teachers: # для учителей
         header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}: пока не готово, сорянчик"
