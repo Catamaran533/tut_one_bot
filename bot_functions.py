@@ -1,5 +1,6 @@
 from telebot import types
 from bot_consts import *
+from notifications import *
 
 @bot.message_handler(commands=['start']) # /start
 def send_welcome(message):
@@ -25,6 +26,9 @@ def help_user(message):
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
+    if call.from_user.username == 'Anton1991ASDF':
+        return
+
     waiting_grade.pop(call.message.chat.id, None)
     waiting_teacher.pop(call.message.chat.id, None)
 
@@ -54,12 +58,15 @@ def callback_answer(call):
         left = types.InlineKeyboardButton("Левая", callback_data=f'math_left_{grade}')
         right = types.InlineKeyboardButton('Правая', callback_data=f'math_right_{grade}')
         markup.row(left, right)
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            text="🔢 Какая у вас группа по математике?",
-            reply_markup=markup
-        )
+        try:
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text="🔢 Какая у вас группа по математике? ",
+                reply_markup=markup
+            )
+        except:
+            pass
 
     elif call.data.startswith('math_'): # уже выбрана группа по математике -> надо выбрать группу по английскому
         parts = call.data.split('_')
@@ -69,12 +76,15 @@ def callback_answer(call):
         left = types.InlineKeyboardButton("Левая", callback_data=f"eng_left_{math_group}_{grade}")
         right = types.InlineKeyboardButton("Правая", callback_data=f"eng_right_{math_group}_{grade}")
         markup.row(left, right)
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            text="🇬🇧 Какая у вас группа по английскому языку?",
-            reply_markup=markup
-        )
+        try:
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text="🇬🇧 Какая у вас группа по английскому языку? ",
+                reply_markup=markup
+            )
+        except:
+            pass
 
     elif call.data.startswith('eng_'):  # Выбрана группа по математике и по английскому
         parts = call.data.split('_')
@@ -87,15 +97,18 @@ def callback_answer(call):
         markup = types.InlineKeyboardMarkup()
         change_btn = types.InlineKeyboardButton("🔄 Изменить настройки", callback_data="change_settings")
         markup.row(change_btn)
-        bot.edit_message_text(
-            chat_id=call.message.chat.id,
-            message_id=call.message.message_id,
-            text=f"👌 Отлично! Все настройки сохранены:\n"
-                 f"Класс: {grade}\n"
-                 f"Математика: {'левая группа' if math_group == 'left' else 'правая группа'}\n"
-                 f"Английский: {'левая группа' if eng_group == 'left' else 'правая группа'}",
-            reply_markup=markup
-        )
+        try:
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text=f"👌 Отлично! Все настройки сохранены:\n"
+                     f"Класс: {grade}\n"
+                     f"Математика: {'левая группа' if math_group == 'left' else 'правая группа'}\n"
+                     f"Английский: {'левая группа' if eng_group == 'left' else 'правая группа'}",
+                reply_markup=markup
+            )
+        except:
+            pass
         send_days(call.message.chat.id, full_id)
 
     elif call.data == 'change_settings':
@@ -116,31 +129,20 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
+    if message.from_user.username == 'Anton1991ASDF':
+        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         changes = schedule.update()
         bot.reply_to(
             message,
-            'Расписание было обновлено вручную.'
+            'Привет, информация о расписание была обновлена.'
         )
         if len(changes) > 0:
-            for chat_id, full_id in user_class.items():
-                only_class = full_id.split('_')[0]
-                for change in changes:
-                    ch_class, ch_day = change
-                    if only_class == ch_class:
-                        try:
-                            bot.send_message(
-                                chat_id,
-                                f"⚠️ <b>Внимание!</b>\nРасписание на <b>{day_cuts_reverse[ch_day]}</b> изменилось!",
-                                parse_mode='HTML'
-                            )
-                            send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id)
-                        except:
-                            pass  # если бот заблокан
+            notify(changes)
         else:
             bot.send_message(
                 message.chat.id,
-                'Расписание никак не изменилось.'
+                'Расписание не изменилось.'
             )
     elif message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
         grade = message.text.lower().replace(' ', '')
@@ -189,6 +191,12 @@ def send_days(chat_id, variable):
 
 # отправка расписания пользователю
 def send_schedule(chat_id, day_key, variable):
+    last_msg = last_schedule_msg.get(chat_id)
+    if last_msg:
+        try:
+            bot.delete_message(chat_id, last_msg)
+        except:
+            pass
     arr = variable.split('_')
     if len(arr) == 1:
         target = arr[0]
@@ -210,9 +218,11 @@ def send_schedule(chat_id, day_key, variable):
             lesson_time = result.get_time(i, group)
             lesson_rooms = result.get_cabs(i, group)
             message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
-        bot.send_message(chat_id, message, parse_mode='HTML')
+        sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
     elif target in teachers: # для учителей
         header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}: пока не готово, сорянчик"
+        sent_message = bot.send_message(chat_id, header)
         # пока тут ничего нету
     else: # на всякий пожарный
-        bot.send_message(chat_id, "😬 Не удалось определить роль. Попробуйте заново через /start")
+        sent_message = bot.send_message(chat_id, "😬 Не удалось определить роль. Попробуйте заново через /start")
+    last_schedule_msg[chat_id] = sent_message.message_id
