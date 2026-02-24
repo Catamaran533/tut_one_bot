@@ -1,6 +1,9 @@
 from telebot import types
 from bot_consts import *
-from notifications import *
+from student_notifications import notify_students
+from teachers_notifications import notify_teachers
+from TeachersTable import *
+from TeachersLesson import *
 
 @bot.message_handler(commands=['start']) # /start
 def send_welcome(message):
@@ -28,7 +31,6 @@ def help_user(message):
 def callback_answer(call):
     if call.from_user.username == 'Anton1991ASDF':
         return
-
     waiting_grade.pop(call.message.chat.id, None)
     waiting_teacher.pop(call.message.chat.id, None)
 
@@ -129,19 +131,29 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
+    if message.from_user.username == 'Anton1991ASDF':
+        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
-        changes = schedule.update()
+        changes_students = schedule.update()
+        if len(changes_students) > 0:
+            notify_students(changes_students)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Расписание для школьников не изменилось.'
+            )
+        changes_teachers = teachers_schedule.update()
+        if len(changes_teachers) > 0:
+            notify_teachers(changes_teachers)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Расписание для учителей не изменилось.'
+            )
         bot.reply_to(
             message,
             'Привет, информация о расписание была обновлена.'
         )
-        if len(changes) > 0:
-            notify(changes)
-        else:
-            bot.send_message(
-                message.chat.id,
-                'Расписание не изменилось.'
-            )
     elif message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
         grade = message.text.lower().replace(' ', '')
         if grade in grades:
@@ -203,7 +215,7 @@ def send_schedule(chat_id, day_key, variable):
     day_name = days[day_key]
     day_cut = day_cuts[day_key]
     if target in grades: # для школьников
-        header = f"📅 Расписание на {day_name.lower()}:" # тут мы также знаем класс, группу по математике, группу по английскому
+        header = f"📅 Расписание на {day_name.lower()}: для класса {target}" # тут мы также знаем класс, группу по математике, группу по английскому
         message = header + "\n\n"
         result = schedule.get_student_day(target, day_cut)
         group = 0
@@ -218,9 +230,17 @@ def send_schedule(chat_id, day_key, variable):
             message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
     elif target in teachers: # для учителей
-        header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}: пока не готово, сорянчик"
-        sent_message = bot.send_message(chat_id, header)
-        # пока тут ничего нету
+        header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}:"
+        message = header + "\n\n"
+        for i in range(8):
+            lesson = teachers_schedule.get_teachers_lesson(target, day_cut, i)
+            lesson_name = lesson.get_lesson_name()
+            if lesson_name == '': continue
+            lesson_class = lesson.get_class_name()
+            lesson_time = lesson.get_time()
+            lesson_rooms = lesson.get_cabs()
+            message += f"{i + 1}. <b>{lesson_name}</b>, {lesson_class}, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
+        sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
     else: # на всякий пожарный
         sent_message = bot.send_message(chat_id, "😬 Не удалось определить роль. Попробуйте заново через /start")
     last_schedule_msg[chat_id] = sent_message.message_id

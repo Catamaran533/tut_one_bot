@@ -25,8 +25,9 @@ class TeachersTable:
                         lesson_name = classes_table.get_student_day(class_name, day).get_lesson(i, j)
                         for teacher in teachers:
                             if (teacher not in teachers_days.keys()):
-                                continue
-                            teachers_days[teacher][day][i] = TeachersLesson(lesson_name, class_name, cabs, time)
+                                teachers_days[teacher][day][i] = TeachersLesson("", "", [], "")
+                            else:
+                                teachers_days[teacher][day][i] = TeachersLesson(lesson_name, class_name, cabs, time)
         self.__teachers_table = teachers_days
 
 
@@ -50,8 +51,9 @@ class TeachersTable:
                         lesson_name = classes_table.get_student_day(class_name, day).get_lesson(i, j)
                         for teacher in teachers:
                             if (teacher not in teachers_days.keys()):
-                                continue
-                            teachers_days[teacher][day][i] = TeachersLesson(lesson_name, class_name, cabs, time)
+                                teachers_days[teacher][day][i] = TeachersLesson("", "", [], "")
+                            else:
+                                teachers_days[teacher][day][i] = TeachersLesson(lesson_name, class_name, cabs, time)
 
         diff = []
 
