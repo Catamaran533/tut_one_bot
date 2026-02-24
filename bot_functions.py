@@ -1,6 +1,7 @@
 from telebot import types
 from bot_consts import *
-from notifications import *
+from student_notifications import *
+from teachers_notifications import *
 from TeachersTable import *
 from TeachersLesson import *
 
@@ -129,18 +130,26 @@ def callback_answer(call):
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
-        changes = schedule.update()
+        changes_students = schedule.update()
+        if len(changes_students) > 0:
+            notify_students(changes_students)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Расписание для школьников не изменилось.'
+            )
+        changes_teachers = teachers_schedule.update()
+        if len(changes_teachers) > 0:
+            notify_teachers(changes_teachers)
+        else:
+            bot.send_message(
+                message.chat.id,
+                'Расписание для учителей не изменилось.'
+            )
         bot.reply_to(
             message,
             'Привет, информация о расписание была обновлена.'
         )
-        if len(changes) > 0:
-            notify(changes)
-        else:
-            bot.send_message(
-                message.chat.id,
-                'Расписание не изменилось.'
-            )
     elif message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
         grade = message.text.lower().replace(' ', '')
         if grade in grades:

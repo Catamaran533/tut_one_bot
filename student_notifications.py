@@ -1,7 +1,9 @@
 from bot_consts import *
 from bot_functions import *
+from bot_functions import send_schedule
 
-def notify(changes):
+
+def notify_students(changes):
     for chat_id, full_id in user_class.items():
         only_class = full_id.split('_')[0]
         for change in changes:
