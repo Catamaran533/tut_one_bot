@@ -56,3 +56,6 @@ class TeachersTable:
                 if (self.__teachers_table[teacher_name][day] != teachers_days[teacher_name][day]):
                     diff.append([teacher_name, day])
         return diff
+
+
+schedule_teacher = TeachersTable
