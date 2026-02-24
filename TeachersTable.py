@@ -11,8 +11,8 @@ class TeachersTable:
     def __init__(self):
         teachers_days = dict()
         for i in MAP_WITH_TEACHERS_NAMES.keys():
+            teachers_days[i] = dict()
             for day in DAYS_OF_THE_WEEK:
-                teachers_days[i] = dict()
                 teachers_days[i][day] = [TeachersLesson("", "", [], "") for _ in range(MAX_LESSONS_PER_DAY)]
         classes_table = ClassesTable()
         for day in DAYS_OF_THE_WEEK:
