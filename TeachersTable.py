@@ -22,7 +22,7 @@ class TeachersTable:
                         time = classes_table.get_student_day(class_name, day).get_time(i, j)
                         lesson_name = classes_table.get_student_day(class_name, day).get_lesson_name(i, j)
                         for teacher in teachers:
-                            teachers_days[teacher] = TeachersLesson(lesson_name, class_name, cabs, time)
+                            teachers_days[teacher][i] = TeachersLesson(lesson_name, class_name, cabs, time)
         self.__teachers_table = teachers_days
 
 
@@ -33,7 +33,7 @@ class TeachersTable:
         diff = []
         new_teachers_days = dict()
         for i in MAP_WITH_TEACHERS_NAMES.keys():
-            new_teachers_days[i] = [TeachersLesson("", "", [], "")] * MAX_LESSONS_PER_DAY
+            new_teachers_days[i] = [TeachersLesson("", "", [], "") for _ in range(MAX_LESSONS_PER_DAY)]
         classes_table = ClassesTable()
         for day in DAYS_OF_THE_WEEK:
             for class_name in CLASSES:
@@ -44,7 +44,7 @@ class TeachersTable:
                         time = classes_table.get_student_day(class_name, day).get_time(i, j)
                         lesson_name = classes_table.get_student_day(class_name, day).get_lesson_name(i, j)
                         for teacher in teachers:
-                            new_teachers_days[teacher] = TeachersLesson(lesson_name, class_name, cabs, time)
+                            new_teachers_days[teacher][i] = TeachersLesson(lesson_name, class_name, cabs, time)
         for teacher_name in MAP_WITH_TEACHERS_NAMES.keys():
             if (self.__teachers_table[teacher_name] != new_teachers_days[teacher_name]):
                 diff.append(teacher_name)

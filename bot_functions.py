@@ -129,8 +129,6 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
-    if message.from_user.username == 'Anton1991ASDF':
-        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         changes = schedule.update()
         bot.reply_to(
