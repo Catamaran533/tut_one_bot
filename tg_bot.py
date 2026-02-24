@@ -4,7 +4,6 @@ from notifications import *
 import threading
 import time
 
-
 def background_update():
     while True:
         time.sleep(UPDATE_TIME_MINUTES * 60)
