@@ -27,8 +27,20 @@ def send_welcome(message):
 def help_user(message):
     bot.send_message('Описание хелпа, добавим в конце проекта')
 
+@bot.message_handler(commands=['notifications'])
+def toggle_notifications(message):
+    current = notifications_enabled.get(message.chat.id, True)
+    notifications_enabled[message.chat.id] = not current
+    if not current:
+        text = "✅ Уведомления <b>включены</b>!\nТеперь бот будет присылать изменения."
+    else:
+        text = "🔕 Уведомления <b>отключены</b>!\nБот больше не будет беспокоить вас сообщениями."
+    bot.send_message(message.chat.id, text, parse_mode='HTML')
+
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
+    if call.from_user.username == 'Anton1991ASDF':
+        return
     waiting_grade.pop(call.message.chat.id, None)
     waiting_teacher.pop(call.message.chat.id, None)
 
@@ -129,6 +141,8 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
+    if message.from_user.username == 'Anton1991ASDF':
+        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         changes_students = schedule.update()
         if len(changes_students) > 0:

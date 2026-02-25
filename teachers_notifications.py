@@ -1,10 +1,11 @@
 from bot_consts import *
 from bot_functions import *
-from bot_functions import send_schedule
 
 
 def notify_teachers(changes):
     for chat_id, teacher_name in user_teacher.items():
+        if not notifications_enabled.get(chat_id, True):
+            continue
         for change in changes:
             ch_teacher, ch_day = change
             if teacher_name == ch_teacher:
