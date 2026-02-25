@@ -11,6 +11,7 @@ user_role = {}  # chat_id → 'student' или 'teacher'
 user_class = {}  # chat_id → класс (например, '9м_left_left')
 user_teacher = {}  # chat_id → фамилия учителя
 last_schedule_msg = {}  # Здесь будем хранить {chat_id: message_id} для посдеднего расписания
+notifications_enabled = {}  # chat_id → True (вкл) или False (выкл)
 days = {
     'mon': 'Понедельник',
     'tue': 'Вторник',

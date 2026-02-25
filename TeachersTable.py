@@ -40,7 +40,6 @@ class TeachersTable:
     def update(self):
         teachers_days = dict()
 
-        # ✅ FIX — правильная инициализация
         for i in MAP_WITH_TEACHERS_NAMES.keys():
             teachers_days[i] = dict()
             for day in DAYS_OF_THE_WEEK:

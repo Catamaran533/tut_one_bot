@@ -1,7 +1,5 @@
 from telebot import types
 from bot_consts import *
-from student_notifications import notify_students
-from teachers_notifications import notify_teachers
 from TeachersTable import *
 from TeachersLesson import *
 
@@ -26,6 +24,16 @@ def send_welcome(message):
 @bot.message_handler(commands=['help']) # /help
 def help_user(message):
     bot.send_message('Описание хелпа, добавим в конце проекта')
+
+@bot.message_handler(commands=['notifications'])
+def toggle_notifications(message):
+    current = notifications_enabled.get(message.chat.id, True)
+    notifications_enabled[message.chat.id] = not current
+    if not current:
+        text = "✅ Уведомления <b>включены</b>!\nТеперь бот будет присылать изменения."
+    else:
+        text = "🔕 Уведомления <b>отключены</b>!\nБот больше не будет беспокоить вас сообщениями."
+    bot.send_message(message.chat.id, text, parse_mode='HTML')
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
@@ -134,6 +142,8 @@ def grade_choice(message):
     if message.from_user.username == 'Anton1991ASDF':
         return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
+        from student_notifications import notify_students
+        from teachers_notifications import notify_teachers
         changes_students = schedule.update()
         if len(changes_students) > 0:
             notify_students(changes_students)
@@ -229,11 +239,12 @@ def send_schedule(chat_id, day_key, variable):
             lesson_rooms = result.get_cabs(i, group)
             message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
-    elif target in teachers: # для учителей
+    elif target.lower() in [t.lower() for t in teachers]: # для учителей
         header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}:"
         message = header + "\n\n"
         for i in range(8):
             lesson = teachers_schedule.get_teachers_lesson(target, day_cut, i)
+            if not lesson: continue
             lesson_name = lesson.get_lesson_name()
             if lesson_name == '': continue
             lesson_class = lesson.get_class_name()
