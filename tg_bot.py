@@ -15,8 +15,10 @@ def background_update():
             changes_teachers = teachers_schedule.update()
             if len(changes_teachers) > 0:
                 notify_teachers(changes_teachers)
-        except:
-            pass
+        except KeyboardInterrupt:
+            break
+        except Exception as e:
+            print(f"Ошибка обновления: {e}")
 
 schedule.update()
 print('Расписание получено')
