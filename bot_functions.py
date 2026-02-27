@@ -23,7 +23,15 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['help']) # /help
 def help_user(message):
-    bot.send_message(message.chat.id, 'Описание хелпа, добавим в конце проекта')
+    text = (
+        "Этот телеграм-бот создан для оперативного получения школьного расписания в ЮМШ.\n\n"
+        "📋 Команды бота:\n"
+        "/start – начать работу с ботом\n"
+        "/help – получить помощь при непонимании\n"
+        "/notifications – включить/выключить уведомления об изменениях в расписании\n\n"
+        "После ввода /start просто двигайтесь по указаниям бота."
+    )
+    bot.send_message(message.chat.id, text)
 
 @bot.message_handler(commands=['notifications'])
 def toggle_notifications(message):
@@ -37,8 +45,6 @@ def toggle_notifications(message):
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
-    if call.from_user.username == 'Anton1991ASDF':
-        return
     waiting_grade.pop(call.message.chat.id, None)
     waiting_teacher.pop(call.message.chat.id, None)
 
@@ -142,8 +148,6 @@ def callback_answer(call):
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
-    if message.from_user.username == 'Anton1991ASDF':
-        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         from student_notifications import notify_students
         from teachers_notifications import notify_teachers
