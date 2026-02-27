@@ -70,6 +70,7 @@ def toggle_notifications(message):
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
+    bot.answer_callback_query(call.id)
     waiting_grade.pop(call.message.chat.id, None)
     waiting_teacher.pop(call.message.chat.id, None)
 
@@ -181,7 +182,10 @@ def callback_answer(call):
         )
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
-def grade_choice(message):
+def text_request(message):
+    if message.forward_date or message.forward_from:
+        bot.reply_to(message, "❌ Пересылка сообщений в бота - запрещена")
+        return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         from student_notifications import notify_students
         from teachers_notifications import notify_teachers
@@ -279,6 +283,8 @@ def send_schedule(chat_id, day_key, variable):
             lesson_time = result.get_time(i, group)
             lesson_rooms = result.get_cabs(i, group)
             message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
+        if message == header + "\n\n":
+            message += '💤 На этот день у Вас нет уроков'
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
     elif target.lower() in [t.lower() for t in teachers]: # для учителей
         header = f"📅 Расписание на {day_name.lower()} для учителя {target.capitalize()}:"
@@ -292,6 +298,8 @@ def send_schedule(chat_id, day_key, variable):
             lesson_time = lesson.get_time()
             lesson_rooms = lesson.get_cabs()
             message += f"{i + 1}. <b>{lesson_name}</b>, {lesson_class}, {lesson_time}, каб. {', '.join(lesson_rooms)}\n"
+        if message == header + "\n\n":
+            message += '💤 На этот день у Вас нет уроков'
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
     else: # на всякий пожарный
         sent_message = bot.send_message(chat_id, "😬 Не удалось определить роль. Попробуйте заново через /start")
