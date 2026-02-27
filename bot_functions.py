@@ -3,20 +3,42 @@ from bot_consts import *
 from TeachersTable import *
 from TeachersLesson import *
 
-@bot.message_handler(commands=['start']) # /start
+def get_menu_keyboard():
+    markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
+    btn_menu = types.KeyboardButton('/menu')
+    markup.row(btn_menu)
+    return markup
+
+@bot.message_handler(commands=['start'])
 def send_welcome(message):
+    text = (
+        "👋 Приветствую! Для начала работы введите /menu \n"
+        "Чтобы получить подробную информацию о работе бота - введите /help"
+    )
+    bot.send_message(
+        message.chat.id,
+        text,
+        parse_mode='HTML',
+        reply_markup = get_menu_keyboard()
+    )
+
+@bot.message_handler(commands=['menu'])
+def show_menu(message):
+    chat_id = message.chat.id
+    user_role.pop(chat_id, None)
+    user_class.pop(chat_id, None)
+    user_teacher.pop(chat_id, None)
+    waiting_grade.pop(chat_id, None)
+    waiting_teacher.pop(chat_id, None)
     markup = types.InlineKeyboardMarkup() # кнопки
     site_button = types.InlineKeyboardButton('Открыть общее расписание', url='https://clck.ru/3QZjCY') # расписание
     markup.row(site_button)
     student_role = types.InlineKeyboardButton('🧑‍🎓 Ученик', callback_data='student') # выбор ученика
     teacher_role = types.InlineKeyboardButton('👩‍🏫 Учитель', callback_data='teacher') # выбор учителя
-    """if message.from_user.username in admins:
-        admin_button = types.InlineKeyboardButton('⚙️ Админ-панель', callback_data='admin_panel')
-        markup.row(admin_button)"""
     markup.row(student_role, teacher_role)
     bot.send_message(
         message.chat.id,
-        '👋 Приветствую!\nВы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - <b>🧑‍🎓школьник(родитель школьника)</b> или <b>👩‍🏫учитель</b>.',
+        '👀 Вы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - <b>🧑‍🎓школьник(родитель школьника)</b> или <b>👩‍🏫учитель</b>.',
         reply_markup=markup,
         parse_mode='HTML'
     )
@@ -27,9 +49,12 @@ def help_user(message):
         "Этот телеграм-бот создан для оперативного получения школьного расписания в ЮМШ.\n\n"
         "📋 Команды бота:\n"
         "/start – начать работу с ботом\n"
+        "/menu - выйти обратно в главное меню с выбором роли\n"
         "/help – получить помощь при непонимании\n"
         "/notifications – включить/выключить уведомления об изменениях в расписании\n\n"
-        "После ввода /start просто двигайтесь по указаниям бота."
+        "После ввода /menu выберите роль - ученик или учитель. После чего введите класс для ученика либо фамилию для учителя.\n"
+        "Если вы выбрали школьника, то выберите ещё группу по математике и по английскому(в случае ошибки эти настройки можно изменить)\n"
+        "Теперь осталось только выбрать день недели и всё!"
     )
     bot.send_message(message.chat.id, text)
 
@@ -52,11 +77,25 @@ def callback_answer(call):
         user_role[call.message.chat.id] = 'student'
         bot.send_message(call.message.chat.id, '✏️ Введите свой класс (например, 9м, 11 хб)')
         waiting_grade[call.message.chat.id] = True # запоминаем - нужен ли ввод
+        try:
+            bot.delete_message(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id
+            )
+        except:
+            pass
 
     elif call.data == 'teacher': # если выбран учитель
         user_role[call.message.chat.id] = 'teacher'
         bot.send_message(call.message.chat.id, '✏️ Введите свою фамилию без пробелов, регистр не важен. Например: "вдовиченко", "Облендер"')
         waiting_teacher[call.message.chat.id] = True # также запомниаем
+        try:
+            bot.delete_message(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id
+            )
+        except:
+            pass
 
     elif call.data.startswith('day_'): # выбран уже и день недели и класс
         arr = call.data.split('_')
@@ -140,11 +179,6 @@ def callback_answer(call):
             chat_id=call.message.chat.id,
             text='✏️ Введите свой класс заново (например, 9м, 11хб):'
         )
-
-    try:
-        bot.answer_callback_query(call.id)  # убираем бесячий таймер на кнопках
-    except:
-        pass
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
