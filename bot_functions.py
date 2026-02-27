@@ -23,7 +23,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['help']) # /help
 def help_user(message):
-    bot.send_message('Описание хелпа, добавим в конце проекта')
+    bot.send_message(message.chat.id, 'Описание хелпа, добавим в конце проекта')
 
 @bot.message_handler(commands=['notifications'])
 def toggle_notifications(message):
@@ -135,7 +135,10 @@ def callback_answer(call):
             text='✏️ Введите свой класс заново (например, 9м, 11хб):'
         )
 
-    bot.answer_callback_query(call.id) # убираем бесячий таймер на кнопках
+    try:
+        bot.answer_callback_query(call.id)  # убираем бесячий таймер на кнопках
+    except:
+        pass
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def grade_choice(message):
