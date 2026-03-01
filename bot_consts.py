@@ -7,6 +7,7 @@ bot = telebot.TeleBot(token=TOKEN) # бот - @UrokPlusBot
 grades = ['5мл', '6мл', '7мл', '8м', '8хб', '8г', '9м', '9хб', '9г', '10м', '10хб', '10г', '11м', '11хб', '11г'] # все классы
 waiting_grade = {} # ожидаем ли ввод класса в этом чате
 waiting_teacher = {} # ожидаем ли ввод фамилии в этом чате
+all_chats_id = set()
 user_role = {}  # chat_id → 'student' или 'teacher'
 user_class = {}  # chat_id → класс (например, '9м_left_left')
 user_teacher = {}  # chat_id → фамилия учителя

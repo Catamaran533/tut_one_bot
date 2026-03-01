@@ -11,6 +11,7 @@ def get_menu_keyboard():
 
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
+    all_chats_id.add(message.chat.id)
     text = (
         "👋 Приветствую! Для начала работы введите /menu \n"
         "Чтобы получить подробную информацию о работе бота - введите /help"
@@ -24,6 +25,7 @@ def send_welcome(message):
 
 @bot.message_handler(commands=['menu'])
 def show_menu(message):
+    all_chats_id.add(message.chat.id)
     chat_id = message.chat.id
     user_role.pop(chat_id, None)
     user_class.pop(chat_id, None)

@@ -6,12 +6,11 @@ import threading
 import time
 
 def stop_bot():
-    all_chats = set(user_class.keys()) | set(user_teacher.keys())
-    for chat in all_chats:
+    for chat in all_chats_id:
         try:
             bot.send_message(
                 chat,
-                "⚠️ <b>Внимание!</b>\nРабота бота временно остановлена на техническое обслуживание.",
+                "⚠️ Работа бота временно остановлена на техническое обслуживание.",
                 parse_mode='HTML'
             )
         except Exception as e:
