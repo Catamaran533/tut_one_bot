@@ -5,6 +5,18 @@ from teachers_notifications import *
 import threading
 import time
 
+def stop_bot():
+    all_chats = set(user_class.keys()) | set(user_teacher.keys())
+    for chat in all_chats:
+        try:
+            bot.send_message(
+                chat,
+                "⚠️ <b>Внимание!</b>\nРабота бота временно остановлена на техническое обслуживание.",
+                parse_mode='HTML'
+            )
+        except Exception as e:
+            pass
+
 def background_update():
     while True:
         time.sleep(UPDATE_TIME_MINUTES * 60)
@@ -22,8 +34,10 @@ def background_update():
 
 schedule.update()
 print('Расписание получено')
-
 update_thread = threading.Thread(target=background_update, daemon=True)
 update_thread.start()
 
-bot.polling(none_stop=True)
+try:
+    bot.polling(none_stop=True)
+finally:
+    stop_bot()
