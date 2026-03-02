@@ -120,7 +120,7 @@ def callback_answer(call):
             bot.edit_message_text(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id,
-                text="🔢 Какая у вас группа по математике? ",
+                text="🔢 Какая у вас группа по профильному предмету? ",
                 reply_markup=markup
             )
         except:
@@ -161,7 +161,7 @@ def callback_answer(call):
                 message_id=call.message.message_id,
                 text=f"👌 Отлично! Все настройки сохранены:\n"
                      f"Класс: {grade}\n"
-                     f"Математика: {'левая группа' if math_group == 'left' else 'правая группа'}\n"
+                     f"Профиль: {'левая группа' if math_group == 'left' else 'правая группа'}\n"
                      f"Английский: {'левая группа' if eng_group == 'left' else 'правая группа'}",
                 reply_markup=markup
             )
