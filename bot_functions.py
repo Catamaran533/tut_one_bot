@@ -257,13 +257,14 @@ def send_days(chat_id, variable):
     bot.send_message(chat_id, "📅 Выберите день недели:", reply_markup=markup)
 
 # отправка расписания пользователю
-def send_schedule(chat_id, day_key, variable):
-    last_msg = last_schedule_msg.get(chat_id)
-    if last_msg:
-        try:
-            bot.delete_message(chat_id, last_msg)
-        except:
-            pass
+def send_schedule(chat_id, day_key, variable, delete_previous=True):
+    if delete_previous:
+        last_msg = last_schedule_msg.get(chat_id)
+        if last_msg:
+            try:
+                bot.delete_message(chat_id, last_msg)
+            except:
+                pass
     arr = variable.split('_')
     if len(arr) == 1:
         target = arr[0]
@@ -275,7 +276,6 @@ def send_schedule(chat_id, day_key, variable):
         header = f"📅 Расписание на {day_name.lower()}: для класса {target}" # тут мы также знаем класс, группу по математике, группу по английскому
         message = header + "\n\n"
         result = schedule.get_student_day(target, day_cut)
-        group = 0
         for i in range(8):
             group = 0 if math == 'left' else 1
             if 'англ' in result.get_lesson(i, 0) or 'англ' in result.get_lesson(i, 1):

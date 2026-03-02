@@ -15,6 +15,6 @@ def notify_students(changes):
                         f"⚠️ <b>Внимание!</b>\nРасписание на <b>{day_cuts_reverse[ch_day]}</b> изменилось!",
                         parse_mode='HTML'
                     )
-                    send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id)
+                    send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id, delete_previous=False)
                 except:
                     pass  # если бот заблокан
