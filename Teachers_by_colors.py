@@ -2,32 +2,12 @@ from ForCrashes import *
 from consts import *
 from GoogleSheet import *
 from SplittingDays import get_day
+from getting_teachers_and_lessons import *
 
 BAD_SYMBOLS = [";", ":", "()", "+", "->", "<-"]
 DAYS_OF_THE_WEEK = ["ПН", "ВТ", "СР", "ЧТ", "ПТ", "СБ", "ВС"]
 CLASSES = ["5мл", "6мл", "7мл", "8м", "9м", "10м", "11м", "8хб", "9хб", "10хб", "11хб", "8г", "9г", "10г", "11г"]
 MAX_LESSONS_PER_DAY = 8
-
-def get_teachers_in_string(text: str):
-    for i in BAD_SYMBOLS:
-        text = text.replace(i, ' ')
-    text = text.split()
-    teachers = []
-    for i in text:
-        only_letters = ''.join([c for c in i if c.isalpha()])
-        if (len(only_letters) == 0):
-            continue
-        if only_letters[0].isupper():
-            only_letters = only_letters.lower()
-            if only_letters in MAP_WITH_TEACHERS_NAMES.keys():
-                teachers.append(only_letters)
-            elif only_letters in MAP_WITH_TEACHERS_ABBREVIATION.keys():
-                teachers.append(MAP_WITH_TEACHERS_ABBREVIATION[only_letters])
-    return teachers
-
-
-
-
 
 def get_teachers_and_colors():
 
@@ -41,7 +21,7 @@ def get_teachers_and_colors():
             l = get_day(class_name, day_of_the_week)
             for i in range(MAX_LESSONS_PER_DAY):
                 for j in [0, 2]:
-                    teachers = get_teachers_in_string(l[i][j].get_text())
+                    teachers = get_teachers(l[i][j].get_text())
                     color = l[i][j].get_color()
                     if len(teachers) == 1:
                         for k in colors_and_teachers:

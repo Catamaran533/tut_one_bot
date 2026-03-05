@@ -3,56 +3,12 @@ from SplittingDays import *
 from StudentLesson import *
 from consts import *
 from Teachers_by_colors import get_teacher_by_color, have_color
+from getting_teachers_and_lessons import *
 
 HORIZONTAL_TABLE_SIZE = 4
 MAX_LESSONS_PER_DAY = 8
 
-BAD_SYMBOLS = [";", ":", "(", ")", "+", "->", "<-"]
 
-def get_teachers(text: str):
-    for i in BAD_SYMBOLS:
-        text = text.replace(i, ' ')
-    text = text.split()
-    teachers = []
-    for i in text:
-        only_letters = ''.join([c for c in i if c.isalpha() or c.isnumeric()])
-        if (len(only_letters) == 0):
-            continue
-        if only_letters[0].isupper():
-            only_letters = only_letters.lower()
-            if only_letters in MAP_WITH_TEACHERS_NAMES.keys():
-                teachers.append(only_letters)
-            elif only_letters in MAP_WITH_TEACHERS_ABBREVIATION.keys():
-                teachers.append(MAP_WITH_TEACHERS_ABBREVIATION[only_letters])
-    return teachers
-
-def get_lesson(text: str):
-    for i in BAD_SYMBOLS:
-        text = text.replace(i, ' ')
-    text = text.split()
-    lesson_list = []
-    for i in text:
-        only_letters = ''.join([c for c in i if c.isalpha() or c.isnumeric()])
-        if (len(only_letters) == 0):
-            continue
-        if only_letters[0].isupper():
-            only_letters = only_letters.lower()
-            if only_letters in MAP_WITH_TEACHERS_NAMES.keys():
-                break
-            elif only_letters in MAP_WITH_TEACHERS_ABBREVIATION.keys():
-                break
-        lesson_list.append(i)
-    lesson = ""
-    for i in lesson_list:
-        lesson += i + " "
-    lesson = lesson.rstrip()
-    return lesson
-
-def get_cabs(text: str):
-    for i in BAD_SYMBOLS:
-        text = text.replace(i, ' ')
-    text = text.split()
-    return text
 
 
 class StudentDay:
