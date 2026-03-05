@@ -2,7 +2,6 @@ from telebot import types
 from bot_consts import *
 from TeachersTable import *
 from TeachersLesson import *
-from room_formatter import format_rooms
 
 def get_menu_keyboard():
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
@@ -187,7 +186,7 @@ def callback_answer(call):
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def text_request(message):
     if message.forward_date or message.forward_from:
-        bot.reply_to(message, "❌ Пересылка сообщений в бота - запрещена")
+        bot.reply_to(message, "❌ Пересылка сообщений в бота - не поддерживается")
         return
     if message.text.lower() == 'обновить' and message.from_user.username in admins:
         from student_notifications import notify_students
@@ -284,8 +283,8 @@ def send_schedule(chat_id, day_key, variable, delete_previous=True):
             lesson = result.get_lesson(i, group)
             if lesson == '': continue
             lesson_time = result.get_time(i, group)
-            lesson_rooms = format_rooms(result.get_cabs(i, group))
-            message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб.: {lesson_rooms}\n"
+            lesson_rooms = result.get_cabs(i, group)
+            message += f"{i + 1}. <b>{lesson}</b>, {lesson_time}, каб.: {', '.join(lesson_rooms)}\n"
         if message == header + "\n\n":
             message += '💤 На этот день у Вас нет уроков'
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
@@ -299,8 +298,8 @@ def send_schedule(chat_id, day_key, variable, delete_previous=True):
             if lesson_name == '': continue
             lesson_class = lesson.get_class_name()
             lesson_time = lesson.get_time()
-            lesson_rooms = format_rooms(lesson.get_cabs())
-            message += f"{i + 1}. <b>{lesson_name}</b>, {lesson_class}, {lesson_time}, каб.: {lesson_rooms}\n"
+            lesson_rooms = lesson.get_cabs()
+            message += f"{i + 1}. <b>{lesson_name}</b>, {lesson_class}, {lesson_time}, каб.: {', '.join(lesson_rooms)}\n"
         if message == header + "\n\n":
             message += '💤 На этот день у Вас нет уроков'
         sent_message = bot.send_message(chat_id, message, parse_mode='HTML')
