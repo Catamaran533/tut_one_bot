@@ -9,12 +9,18 @@ def get_menu_keyboard():
     markup.row(btn_menu)
     return markup
 
+@bot.message_handler(content_types=['audio', 'photo', 'voice', 'video', 'video_note',
+                                    'document', 'sticker', 'location', 'contact',
+                                    'venue', 'invoice', 'animation'])
+def warn_user(message):
+    bot.reply_to(message, "Бот не поддерживает такой формат, только текст. ✍️")
+
 @bot.message_handler(commands=['start'])
 def send_welcome(message):
     all_chats_id.add(message.chat.id)
     text = (
         "👋 Приветствую! Для начала работы введите /menu \n"
-        "Чтобы получить подробную информацию о работе бота - введите /help"
+        "Чтобы получить справку о работе бота - введите /help"
     )
     bot.send_message(
         message.chat.id,
