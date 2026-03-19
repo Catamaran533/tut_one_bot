@@ -37,6 +37,6 @@ update_thread = threading.Thread(target=background_update, daemon=True)
 update_thread.start()
 
 try:
-    bot.polling(none_stop=True)
+    bot.polling(none_stop=True, timeout=180, long_polling_timeout=180)
 finally:
     stop_bot()

@@ -2,7 +2,18 @@ import telebot
 from ClassesTable import *
 from TeachersTable import *
 from TeachersLesson import *
-TOKEN = '8275369590:AAG2CUbhj6Kf6qsCg3V3bAZp6Ve4XxcTp74'
+from telebot import apihelper
+import socks
+
+PROXY_HOST = '104.164.32.234'
+PROXY_PORT = 62887
+PROXY_LOGIN = 'BKXNvGYr9'
+PROXY_PASS = 'HHcx8Kw7u'
+apihelper.proxy = {
+    'https': f'socks5://{PROXY_LOGIN}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}'
+}
+
+TOKEN = '8275369590:AAGkscc0P7PDBLGmiIfus73IVj2zRB2pgkM'
 bot = telebot.TeleBot(token=TOKEN) # бот - @UrokPlusBot
 grades = ['5мл', '6мл', '7мл', '8м', '8хб', '8г', '9м', '9хб', '9г', '10м', '10хб', '10г', '11м', '11хб', '11г'] # все классы
 waiting_grade = {} # ожидаем ли ввод класса в этом чате

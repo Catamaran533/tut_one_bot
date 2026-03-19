@@ -1,5 +1,5 @@
 from consts import *
-BAD_SYMBOLS = [";", ":", "(", ")", "+", "->", "<-", ","]
+BAD_SYMBOLS = [";", "(", ")", "+", "->", "<-", ","]
 
 def get_teachers(text: str):
     for i in BAD_SYMBOLS:
@@ -8,7 +8,8 @@ def get_teachers(text: str):
     teachers = []
     for i in text:
         only_letters = ''.join([c for c in i if c.isalpha() or c.isnumeric()])
-        if len(only_letters) == 0: continue
+        if len(only_letters) == 0:
+            continue
         if only_letters[0].isupper():
             only_letters = only_letters.lower()
             if only_letters in MAP_WITH_TEACHERS_NAMES.keys():
@@ -17,6 +18,7 @@ def get_teachers(text: str):
                 teachers.append(MAP_WITH_TEACHERS_ABBREVIATION[only_letters])
     return teachers
 
+
 def get_lesson(text: str):
     for i in BAD_SYMBOLS:
         text = text.replace(i, ' ')
@@ -24,7 +26,8 @@ def get_lesson(text: str):
     lesson_list = []
     for i in text:
         only_letters = ''.join([c for c in i if c.isalpha() or c.isnumeric()])
-        if len(only_letters) == 0: continue
+        if len(only_letters) == 0:
+            continue
         if only_letters[0].isupper():
             only_letters = only_letters.lower()
             if only_letters in MAP_WITH_TEACHERS_NAMES.keys():
@@ -38,32 +41,39 @@ def get_lesson(text: str):
     lesson = lesson.rstrip()
     return lesson
 
-BAD_SYMBOLS_FOR_CABS = [";", ":", "(", ")", "+", "->", "<-", ",", "."]
+BAD_SYMBOLS_FOR_CABS = BAD_SYMBOLS + ["."]
 allowed_cabs = ['зал']
 def get_cabs(text: str):
     for i in BAD_SYMBOLS:
         text = text.replace(i, ' ')
     text = text.split()
-    first_rooms = []
+    ans = []
     for i in text:
-        if (i.isdigit() and len(i) == 3) or i in allowed_cabs:
-            first_rooms.append(i)
+        if (i.isdigit()) or i in allowed_cabs:
+            ans.append(i)
         else:
             only_letters = ''.join([c for c in i if c.isalpha()])
             only_letters = only_letters.lower()
             if only_letters in ["шк", "школа"]:
-                first_rooms.append("школа")
+                ans.append("школа")
             if only_letters == "лицей":
-                first_rooms.append("лицей")
-    result_rooms = []
-    for i in range(len(first_rooms)):
+                ans.append("лицей")
+    ans1 = []
+    for i in range(len(ans)):
         if i == 0:
-            result_rooms.append(first_rooms[i])
+            ans1.append(ans[i])
             continue
-        if first_rooms[i - 1] in ["шк", "школа", "лицей"]:
-            result_rooms[len(result_rooms) - 1] += " " + first_rooms[i]
+        if ans[i - 1] in ["шк", "школа", "лицей"]:
+            ans1[len(ans1) - 1] += " " + ans[i]
         else:
-            result_rooms.append(first_rooms[i])
-    if len(result_rooms) == 0:
-        result_rooms = ["не известно."]
-    return result_rooms
+            ans1.append(ans[i])
+
+    ans2 = []
+    for i in ans1:
+        if i.isdigit() and len(i) != 3:
+            continue
+        ans2.append(i)
+
+    if len(ans2) == 0:
+        ans2 = ["не известно."]
+    return ans2
