@@ -19,7 +19,7 @@ def warn_user(message):
     except Exception as e:
         logger.error(f"warn_user упала из-за {e} от {message.from_user.username}")
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'старт'])
 def send_welcome(message):
     try:
         all_chats_id.add(message.chat.id)
@@ -36,7 +36,7 @@ def send_welcome(message):
     except Exception as e:
         logger.error(f"send_welcome упала из-за {e} от {message.from_user.username}")
 
-@bot.message_handler(commands=['menu'])
+@bot.message_handler(commands=['menu', 'меню'])
 def show_menu(message):
     try:
         all_chats_id.add(message.chat.id)
@@ -61,22 +61,22 @@ def show_menu(message):
     except Exception as e:
         logger.error(f"show_menu упала из-за {e} от {message.from_user.username}")
 
-@bot.message_handler(commands=['help']) # /help
+@bot.message_handler(commands=['help', 'помощь']) # /help
 def help_user(message):
     text = (
         "Этот телеграм-бот создан для оперативного получения школьного расписания в ЮМШ.\n\n"
         "📋 Команды бота:\n"
         "/start – начать работу с ботом\n"
-        "/menu - выйти обратно в главное меню с выбором роли\n"
-        "/help – получить помощь при непонимании\n"
-        "/notifications – включить/выключить уведомления об изменениях в расписании\n\n"
+        "/menu или /меню - выйти обратно в главное меню с выбором роли\n"
+        "/help или /помощь – получить справку при непонимании\n"
+        "/notifications или /уведомления – включить/выключить уведомления об изменениях в расписании\n\n"
         "После ввода /menu выберите роль - ученик или учитель. После чего введите класс для ученика либо фамилию для учителя.\n"
         "Если вы выбрали школьника, то выберите ещё группу по математике и по английскому(в случае ошибки эти настройки можно изменить)\n"
         "Теперь осталось только выбрать день недели и всё!"
     )
     bot.send_message(message.chat.id, text)
 
-@bot.message_handler(commands=['notifications'])
+@bot.message_handler(commands=['notifications', 'уведомления'])
 def toggle_notifications(message):
     try:
         current = notifications_enabled.get(message.chat.id, True)
