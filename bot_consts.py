@@ -4,6 +4,10 @@ from TeachersTable import *
 from TeachersLesson import *
 from telebot import apihelper
 import socks
+import logging
+
+logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(message)s')
+logger = logging.getLogger('SchoolBot')
 
 PROXY_HOST = '104.164.32.234'
 PROXY_PORT = 62887

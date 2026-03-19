@@ -14,7 +14,7 @@ def stop_bot():
                 parse_mode='HTML'
             )
         except Exception as e:
-            pass
+            logger.error(f"stop_bot упала из-за {e} от system")
 
 def background_update():
     while True:
@@ -29,7 +29,7 @@ def background_update():
         except KeyboardInterrupt:
             break
         except Exception as e:
-            print(f"Ошибка обновления: {e}")
+            logger.error(f"background_update упала из-за {e} от system")
 
 schedule.update()
 print('Расписание получено')
@@ -38,5 +38,7 @@ update_thread.start()
 
 try:
     bot.polling(none_stop=True, timeout=180, long_polling_timeout=180)
+except Exception as e:
+    logger.error(f"polling упала из-за {e} от system")
 finally:
     stop_bot()
