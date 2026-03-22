@@ -1,5 +1,16 @@
 from bot_consts import *
-from message_sender import send_schedule
+import threading
+import time
+
+def delete_message_later(chat_id, message_id, delay=3600):
+    def _delete():
+        time.sleep(delay)
+        try:
+            bot.delete_message(chat_id, message_id)
+        except:
+            pass
+    thread = threading.Thread(target=_delete)
+    thread.start()
 
 def notify_students(changes):
     try:
@@ -11,12 +22,12 @@ def notify_students(changes):
                 ch_class, ch_day = change
                 if only_class == ch_class:
                     try:
-                        bot.send_message(
+                        msg = bot.send_message(
                             chat_id,
-                            f"⚠️ <b>Внимание!</b>\nРасписание на <b>{day_cuts_reverse[ch_day]}</b> изменилось!",
+                            f"⚠️ Внимание!\nРасписание на {day_cuts_reverse[ch_day]} изменилось!",
                             parse_mode='HTML'
                         )
-                        send_schedule(chat_id, day_cuts_for_bot[ch_day], full_id, delete_previous=False)
+                        delete_message_later(chat_id, msg.message_id)
                     except Exception as e:
                         logger.error(f"notify_students упала из-за {e} от {chat_id}")
     except Exception as e:

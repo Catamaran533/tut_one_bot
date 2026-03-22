@@ -96,28 +96,30 @@ def callback_answer(call):
         waiting_grade.pop(call.message.chat.id, None)
         waiting_teacher.pop(call.message.chat.id, None)
 
-        if call.data == 'student': # если выбран школьник
+        if call.data == 'student':  # если выбран школьник
             user_role[call.message.chat.id] = 'student'
-            bot.send_message(call.message.chat.id, '✏️ Введите свой класс (например, 9м, 11 хб)')
-            waiting_grade[call.message.chat.id] = True # запоминаем - нужен ли ввод
+            waiting_grade[call.message.chat.id] = True
             try:
-                bot.delete_message(
+                bot.edit_message_text(
                     chat_id=call.message.chat.id,
-                    message_id=call.message.message_id
+                    message_id=call.message.message_id,
+                    text='✏️ Введите свой класс (например, 9м, 11хб)',
+                    reply_markup=None
                 )
-            except:
+            except Exception:
                 pass
 
-        elif call.data == 'teacher': # если выбран учитель
+        elif call.data == 'teacher':
             user_role[call.message.chat.id] = 'teacher'
-            bot.send_message(call.message.chat.id, '✏️ Введите свою фамилию без пробелов, регистр не важен. Например: "вдовиченко", "Облендер"')
-            waiting_teacher[call.message.chat.id] = True # также запомниаем
+            waiting_teacher[call.message.chat.id] = True
             try:
-                bot.delete_message(
+                bot.edit_message_text(
                     chat_id=call.message.chat.id,
-                    message_id=call.message.message_id
+                    message_id=call.message.message_id,
+                    text='✏️ Введите свою фамилию без пробелов, регистр не важен. Например: "иванов"',
+                    reply_markup=None
                 )
-            except:
+            except Exception:
                 pass
 
         elif call.data.startswith('day_'): # выбран уже и день недели и класс
