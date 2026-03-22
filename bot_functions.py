@@ -135,7 +135,7 @@ def callback_answer(call):
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text=f"👌 Отлично! Настройки сохранены:\nКласс: {grade}\nРежим: 🔄 Обе группы (левая и правая)",
+                    text=f"👌 Отлично! Настройки сохранены:\nКласс: {grade}\nРежим: 🔵🔴 Обе группы (левая и правая)",
                     reply_markup=markup
                 )
             except:
