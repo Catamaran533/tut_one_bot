@@ -122,14 +122,42 @@ def callback_answer(call):
             except Exception:
                 pass
 
-        elif call.data.startswith('day_'): # выбран уже и день недели и класс
+        elif call.data.startswith('both_groups_'):
+            grade = call.data.split('_')[2]
+            user_role[call.message.chat.id] = 'student'
+            user_class[call.message.chat.id] = f"{grade}_both"
+            waiting_grade.pop(call.message.chat.id, None)
+            waiting_teacher.pop(call.message.chat.id, None)
+            markup = types.InlineKeyboardMarkup()
+            change_btn = types.InlineKeyboardButton("🔄 Изменить настройки", callback_data="change_settings")
+            markup.row(change_btn)
+            try:
+                bot.edit_message_text(
+                    chat_id=call.message.chat.id,
+                    message_id=call.message.message_id,
+                    text=f"👌 Отлично! Настройки сохранены:\nКласс: {grade}\nРежим: 🔄 Обе группы (левая и правая)",
+                    reply_markup=markup
+                )
+            except:
+                pass
+            send_days(call.message.chat.id, f"{grade}_both")
+
+        elif call.data.startswith('day_'):
             arr = call.data.split('_')
-            if len(arr) == 3: # нужно расписание для учителя
-                _, day_key, teacher = arr # ничего, день, учитель
-                send_schedule(call.message.chat.id, day_key, teacher) # пишем расписание
-            else: # нужно расписание для школьника
-                _, day_key, grade, math, eng = arr
-                send_schedule(call.message.chat.id, day_key, grade + '_' + math + '_' + eng) # пишем расписание
+            day_key = arr[1]
+            if len(arr) == 3:
+                teacher = arr[2]
+                send_schedule(call.message.chat.id, day_key, teacher)
+            elif len(arr) == 4 and arr[3] == 'both':
+                grade = arr[2]
+                variable = f"{grade}_both"
+                send_schedule(call.message.chat.id, day_key, variable)
+            else:
+                grade = arr[2]
+                math = arr[3]
+                eng = arr[4]
+                variable = f"{grade}_{math}_{eng}"
+                send_schedule(call.message.chat.id, day_key, variable)
 
         elif call.data.startswith('choose_math_'): # выбор группы по математике
             arr = call.data.split('_')
@@ -192,6 +220,7 @@ def callback_answer(call):
             send_days(call.message.chat.id, full_id)
 
         elif call.data == 'change_settings':
+            last_schedule_msg.pop(call.message.chat.id, None)
             waiting_grade[call.message.chat.id] = True
             waiting_teacher.pop(call.message.chat.id, None)  # на всякий случай
             user_role[call.message.chat.id] = 'student'  # оставляем роль ученика
@@ -241,13 +270,16 @@ def text_request(message):
             if grade in grades:
                 del waiting_grade[message.chat.id] # удаляем этот чат из списка тех где ожидаем ввод класса
                 markup = types.InlineKeyboardMarkup()
-                button = types.InlineKeyboardButton("Продолжить", callback_data=f"choose_math_{grade}")
+                button = types.InlineKeyboardButton("Продолжить (выбор групп)", callback_data=f"choose_math_{grade}")
+                both_btn = types.InlineKeyboardButton("Выводить расписание обеих групп",
+                                                      callback_data=f"both_groups_{grade}")
                 markup.row(button)
+                markup.row(both_btn)
                 bot.send_message(
                     message.chat.id,
-                    "↔️ Теперь нужно выбрать ваши группы для предметов.\nНажмите 'Продолжить', чтобы начать.",
+                    "↔️ Теперь нужно выбрать ваши группы для предметов.\nНажмите 'Продолжить', чтобы выбрать группы, или 'Выводить обе', чтобы видеть всё сразу. ",
                     reply_markup=markup
-                ) # выбор групп по английскому и математике
+                )
             else:
                 bot.reply_to(message, f'❌ Неправильно введён класс. Введите его ещё раз. Список предложенных классов: \n{", ".join(grades)}')
                 # теперь надо ввести класс ещё раз
