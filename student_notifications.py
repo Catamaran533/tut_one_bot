@@ -18,9 +18,10 @@ def notify_students(changes):
             if not notifications_enabled.get(chat_id, True):
                 continue
             only_class = full_id.split('_')[0]
+            notified_days = []
             for change in changes:
                 ch_class, ch_day = change
-                if only_class == ch_class:
+                if only_class == ch_class and ch_day not in notified_days:
                     try:
                         msg = bot.send_message(
                             chat_id,
@@ -28,6 +29,7 @@ def notify_students(changes):
                             parse_mode='HTML'
                         )
                         delete_message_later(chat_id, msg.message_id)
+                        notified_days.append(ch_day)
                     except Exception as e:
                         logger.error(f"notify_students упала из-за {e} от {chat_id}")
     except Exception as e:

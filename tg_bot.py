@@ -37,6 +37,10 @@ update_thread = threading.Thread(target=background_update, daemon=True)
 update_thread.start()
 
 try:
+    user_class.clear()
+    last_schedule_msg.clear()
+    waiting_grade.clear()
+    waiting_teacher.clear()
     bot.polling(none_stop=True, timeout=180, long_polling_timeout=180)
 except Exception as e:
     logger.error(f"polling упала из-за {e} от system")
