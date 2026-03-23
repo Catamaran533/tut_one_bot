@@ -1,8 +1,7 @@
 from bot_consts import *
 from telebot import types
 
-# функция выбора дня недели
-def send_days(chat_id, variable):
+def send_days(chat_id, variable): # функция выбора дня недели
     try:
         markup = types.InlineKeyboardMarkup()
         markup.row(

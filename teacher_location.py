@@ -1,7 +1,7 @@
 from bot_consts import *
 from datetime import datetime
 
-def parse_lesson_time(time_str):
+def parse_lesson_time(time_str): # парсинг времени урока
     try:
         if not time_str or not isinstance(time_str, str):
             return None, None

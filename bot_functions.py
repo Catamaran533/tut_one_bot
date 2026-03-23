@@ -5,7 +5,7 @@ from TeachersLesson import *
 from message_sender import send_schedule, send_days
 from teacher_location import *
 
-def get_menu_keyboard(): # функция, чтобы кнопка "/menu" всегда отображалась снизу
+def get_menu_keyboard(): # функция, чтобы кнопка "/menu" отображалась снизу
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     btn_menu = types.KeyboardButton('/menu')
     markup.row(btn_menu)

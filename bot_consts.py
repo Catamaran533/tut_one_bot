@@ -7,7 +7,7 @@ import socks
 import logging
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(message)s')
-logger = logging.getLogger('SchoolBot')
+logger = logging.getLogger('SchoolBotYumsh')
 
 PROXY_HOST = '104.164.32.234'
 PROXY_PORT = 62887
