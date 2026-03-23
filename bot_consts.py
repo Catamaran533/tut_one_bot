@@ -17,12 +17,13 @@ apihelper.proxy = {
     'https': f'socks5://{PROXY_LOGIN}:{PROXY_PASS}@{PROXY_HOST}:{PROXY_PORT}'
 }
 
-TOKEN = '8275369590:AAGkscc0P7PDBLGmiIfus73IVj2zRB2pgkM'
+TOKEN = '8275369590:AAGkscc0P7PDBLGmiIfus73IVj2zRB2pgkM' # токен бота
 bot = telebot.TeleBot(token=TOKEN) # бот - @UrokPlusBot
 grades = ['5мл', '6мл', '7мл', '8м', '8хб', '8г', '9м', '9хб', '9г', '10м', '10хб', '10г', '11м', '11хб', '11г'] # все классы
 waiting_grade = {} # ожидаем ли ввод класса в этом чате
 waiting_teacher = {} # ожидаем ли ввод фамилии в этом чате
-all_chats_id = set()
+waiting_location_teacher = {}  # ожидаем ввод фамилии для поиска кабинета
+all_chats_id = set() # сет всех чатов
 user_role = {}  # chat_id → 'student' или 'teacher'
 user_class = {}  # chat_id → класс (например, '9м_left_left')
 user_teacher = {}  # chat_id → фамилия учителя
@@ -64,9 +65,10 @@ day_cuts_reverse = {
     'СБ': 'Суббота',
     'ВС': 'Воскресенье',
 } # расшифровка дней
+days_map = {0: 'ПН', 1: 'ВТ', 2: 'СР', 3: 'ЧТ', 4: 'ПТ', 5: 'СБ', 6: 'ВС'}
 teachers = {i for i in MAP_WITH_TEACHERS_NAMES.keys()} # все учителя
 admins = {'ProArtem567', 'mishagrib', 'dzaicev'} # админы бота
 
-UPDATE_TIME_MINUTES = 10
-schedule = ClassesTable()
-teachers_schedule = TeachersTable()
+UPDATE_TIME_MINUTES = 10 # время обновления расписаний на фоне
+schedule = ClassesTable() # расписание для учеников
+teachers_schedule = TeachersTable() # расписание для учителей
