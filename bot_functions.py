@@ -3,8 +3,9 @@ from bot_consts import *
 from TeachersTable import *
 from TeachersLesson import *
 from message_sender import send_schedule, send_days
+from teacher_location import *
 
-def get_menu_keyboard():
+def get_menu_keyboard(): # функция, чтобы кнопка "/menu" отображалась снизу
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
     btn_menu = types.KeyboardButton('/menu')
     markup.row(btn_menu)
@@ -13,13 +14,13 @@ def get_menu_keyboard():
 @bot.message_handler(content_types=['audio', 'photo', 'voice', 'video', 'video_note',
                                     'document', 'sticker', 'location', 'contact',
                                     'venue', 'invoice', 'animation'])
-def warn_user(message):
+def warn_user(message): # обрабатываем любое сообщение кроме текста
     try:
         bot.reply_to(message, "Бот не поддерживает такой формат, только текст. ✍️")
     except Exception as e:
         logger.error(f"warn_user упала из-за {e} от {message.from_user.username}")
 
-@bot.message_handler(commands=['start', 'старт'])
+@bot.message_handler(commands=['start', 'старт']) # стартовая функция
 def send_welcome(message):
     try:
         all_chats_id.add(message.chat.id)
@@ -37,24 +38,29 @@ def send_welcome(message):
         logger.error(f"send_welcome упала из-за {e} от {message.from_user.username}")
 
 @bot.message_handler(commands=['menu', 'меню'])
-def show_menu(message):
+def show_menu(message): # главное меню бота
     try:
         all_chats_id.add(message.chat.id)
         chat_id = message.chat.id
+        # очищаем всё, т.к. эта функция - фактический перезапуск бота
         user_role.pop(chat_id, None)
         user_class.pop(chat_id, None)
         user_teacher.pop(chat_id, None)
         waiting_grade.pop(chat_id, None)
         waiting_teacher.pop(chat_id, None)
+        waiting_location_teacher.pop(chat_id, None)
         markup = types.InlineKeyboardMarkup() # кнопки
         site_button = types.InlineKeyboardButton('Открыть общее расписание', url='https://clck.ru/3QZjCY') # расписание
         markup.row(site_button)
         student_role = types.InlineKeyboardButton('🧑‍🎓 Ученик', callback_data='student') # выбор ученика
         teacher_role = types.InlineKeyboardButton('👩‍🏫 Учитель', callback_data='teacher') # выбор учителя
         markup.row(student_role, teacher_role)
+        location_btn = types.InlineKeyboardButton('📍 Узнать, где учитель', callback_data='teacher_location')
+        markup.row(location_btn)
         bot.send_message(
             message.chat.id,
-            '👀 Вы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - <b>🧑‍🎓школьник(родитель школьника)</b> или <b>👩‍🏫учитель</b>.',
+            '👀 Вы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - 🧑‍🎓школьник(родитель школьника) или 👩‍🏫учитель.\n\n'
+            '📍 Также вы можете быстро узнать, в каком кабинете находится учитель прямо сейчас!',
             reply_markup=markup,
             parse_mode='HTML'
         )
@@ -63,18 +69,21 @@ def show_menu(message):
 
 @bot.message_handler(commands=['help', 'помощь']) # /help
 def help_user(message):
-    text = (
-        "Этот телеграм-бот создан для оперативного получения школьного расписания в ЮМШ.\n\n"
-        "📋 Команды бота:\n"
-        "/start – начать работу с ботом\n"
-        "/menu или /меню - выйти обратно в главное меню с выбором роли\n"
-        "/help или /помощь – получить справку при непонимании\n"
-        "/notifications или /уведомления – включить/выключить уведомления об изменениях в расписании\n\n"
-        "После ввода /menu выберите роль - ученик или учитель. После чего введите класс для ученика либо фамилию для учителя.\n"
-        "Если вы выбрали школьника, то выберите ещё группу по математике и по английскому(в случае ошибки эти настройки можно изменить)\n"
-        "Теперь осталось только выбрать день недели и всё!"
-    )
-    bot.send_message(message.chat.id, text)
+    try:
+        text = (
+            "Этот телеграм-бот создан для оперативного получения школьного расписания в ЮМШ.\n\n"
+            "📋 Команды бота:\n"
+            "/start – начать работу с ботом\n"
+            "/menu или /меню - выйти обратно в главное меню с выбором роли\n"
+            "/help или /помощь – получить справку при непонимании\n"
+            "/notifications или /уведомления – включить/выключить уведомления об изменениях в расписании\n\n"
+            "После ввода /menu выберите роль - ученик или учитель. После чего введите класс для ученика либо фамилию для учителя.\n"
+            "Если вы выбрали школьника, то выберите ещё группу по математике и по английскому(в случае ошибки эти настройки можно изменить)\n"
+            "Теперь осталось только выбрать день недели и всё!"
+        )
+        bot.send_message(message.chat.id, text)
+    except Exception as e:
+        logger.error(f"help_user упала из-за {e} от {message.from_user.username}")
 
 @bot.message_handler(commands=['notifications', 'уведомления'])
 def toggle_notifications(message):
@@ -91,14 +100,18 @@ def toggle_notifications(message):
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
+    if call.from_user.username == 'Anton1991ASDF':
+        return
     try:
         bot.answer_callback_query(call.id)
         waiting_grade.pop(call.message.chat.id, None)
         waiting_teacher.pop(call.message.chat.id, None)
-
+        waiting_location_teacher.pop(call.message.chat.id, None)
+        # удаляем его из списка тех, где ожидаем ввод
         if call.data == 'student':  # если выбран школьник
             user_role[call.message.chat.id] = 'student'
             waiting_grade[call.message.chat.id] = True
+            # ждём ввод класса
             try:
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
@@ -109,25 +122,27 @@ def callback_answer(call):
             except Exception:
                 pass
 
-        elif call.data == 'teacher':
+        elif call.data == 'teacher': # если выбран учитель
             user_role[call.message.chat.id] = 'teacher'
             waiting_teacher[call.message.chat.id] = True
+            # ждём ввод фамилии
             try:
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text='✏️ Введите свою фамилию без пробелов, регистр не важен. Например: "иванов"',
+                    text='✏️ Введите свою фамилию без пробелов, регистр не важен. Например: "вдовиченко", "Зачиняев"',
                     reply_markup=None
                 )
             except Exception:
                 pass
 
-        elif call.data.startswith('both_groups_'):
-            grade = call.data.split('_')[2]
-            user_role[call.message.chat.id] = 'student'
+        elif call.data.startswith('both_groups_'): # юзер выбрал расписание для обеих групп
+            grade = call.data.split('_')[2] # достаём его класс
+            user_role[call.message.chat.id] = 'student' # помечаем его
             user_class[call.message.chat.id] = f"{grade}_both"
             waiting_grade.pop(call.message.chat.id, None)
             waiting_teacher.pop(call.message.chat.id, None)
+            # удаляем его ото всюду
             markup = types.InlineKeyboardMarkup()
             change_btn = types.InlineKeyboardButton("🔄 Изменить настройки", callback_data="change_settings")
             markup.row(change_btn)
@@ -142,24 +157,24 @@ def callback_answer(call):
                 pass
             send_days(call.message.chat.id, f"{grade}_both")
 
-        elif call.data.startswith('day_'):
+        elif call.data.startswith('day_'): # выбран день недели и все настройки
             arr = call.data.split('_')
             day_key = arr[1]
-            if len(arr) == 3:
+            if len(arr) == 3: # значит учитель
                 teacher = arr[2]
                 send_schedule(call.message.chat.id, day_key, teacher)
-            elif len(arr) == 4 and arr[3] == 'both':
+            elif len(arr) == 4 and arr[3] == 'both': # ученик выбрал обе группы
                 grade = arr[2]
                 variable = f"{grade}_both"
                 send_schedule(call.message.chat.id, day_key, variable)
-            else:
+            else: # ученик выбрал расписание только для 1 группы по профильному и по английскому
                 grade = arr[2]
                 math = arr[3]
                 eng = arr[4]
                 variable = f"{grade}_{math}_{eng}"
                 send_schedule(call.message.chat.id, day_key, variable)
 
-        elif call.data.startswith('choose_math_'): # выбор группы по математике
+        elif call.data.startswith('choose_math_'): # выбор группы по профильному (позже выяснили, что профиль != математика, но уже забил в коде)
             arr = call.data.split('_')
             grade = arr[2]
             markup = types.InlineKeyboardMarkup()
@@ -188,7 +203,7 @@ def callback_answer(call):
                 bot.edit_message_text(
                     chat_id=call.message.chat.id,
                     message_id=call.message.message_id,
-                    text="🇬🇧 Какая у вас группа по английскому языку? ",
+                    text="🇬🇧 Какая у вас группа по английскому языку?",
                     reply_markup=markup
                 )
             except:
@@ -200,8 +215,7 @@ def callback_answer(call):
             math_group = parts[2]
             grade = parts[3]
             full_id = f"{grade}_{math_group}_{eng_group}"  # Формат: 9м_left_left (класс_мат_англ)
-            user_class[call.message.chat.id] = full_id
-
+            user_class[call.message.chat.id] = full_id # запоминаем настройки для него
             markup = types.InlineKeyboardMarkup()
             change_btn = types.InlineKeyboardButton("🔄 Изменить настройки", callback_data="change_settings")
             markup.row(change_btn)
@@ -219,55 +233,44 @@ def callback_answer(call):
                 pass
             send_days(call.message.chat.id, full_id)
 
-        elif call.data == 'change_settings':
+        elif call.data == 'change_settings': # возможность изменить выбранные настройки у ученика
             last_schedule_msg.pop(call.message.chat.id, None)
-            waiting_grade[call.message.chat.id] = True
+            waiting_grade[call.message.chat.id] = True # значит заново ждём класс и группы
             waiting_teacher.pop(call.message.chat.id, None)  # на всякий случай
             user_role[call.message.chat.id] = 'student'  # оставляем роль ученика
             user_class.pop(call.message.chat.id, None)
             bot.delete_message(
                 chat_id=call.message.chat.id,
                 message_id=call.message.message_id
-            )
+            ) # удаляем прошлое сообщение
             bot.send_message(
                 chat_id=call.message.chat.id,
                 text='✏️ Введите свой класс заново (например, 9м, 11хб):'
             )
+
+        elif call.data == 'teacher_location': # юзер хочет узнать, где сейчас препод
+            waiting_location_teacher[call.message.chat.id] = True
+            waiting_grade.pop(call.message.chat.id, None)
+            waiting_teacher.pop(call.message.chat.id, None)
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text='📍 Введите фамилию учителя (регистр не важен):\nНапример: вдовиЧЕНко, Клюев, АБАКУМОВА',
+                reply_markup=None
+            )
+
     except Exception as e:
         logger.error(f"callback_answer упала из-за {e} от {call.from_user.username}")
 
 @bot.message_handler(func=lambda message: True) # выбор класса/личности
 def text_request(message):
     try:
-        if message.forward_date or message.forward_from:
+        if message.forward_date or message.forward_from: # обрабатываем пересланный текст
             bot.reply_to(message, "❌ Пересылка сообщений в бота - не поддерживается")
             return
-        if message.text.lower() == 'обновить' and message.from_user.username in admins:
-            from student_notifications import notify_students
-            from teachers_notifications import notify_teachers
-            changes_students = schedule.update()
-            if len(changes_students) > 0:
-                notify_students(changes_students)
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'Расписание для школьников не изменилось.'
-                )
-            changes_teachers = teachers_schedule.update()
-            if len(changes_teachers) > 0:
-                notify_teachers(changes_teachers)
-            else:
-                bot.send_message(
-                    message.chat.id,
-                    'Расписание для учителей не изменилось.'
-                )
-            bot.reply_to(
-                message,
-                'Привет, информация о расписание была обновлена.'
-            )
-        elif message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
+        if message.chat.id in waiting_grade and waiting_grade[message.chat.id]: # ждём ввод класса в этом чате
             grade = message.text.lower().replace(' ', '')
-            if grade in grades:
+            if grade in grades: # если введён верно
                 del waiting_grade[message.chat.id] # удаляем этот чат из списка тех где ожидаем ввод класса
                 markup = types.InlineKeyboardMarkup()
                 button = types.InlineKeyboardButton("Продолжить (выбор групп)", callback_data=f"choose_math_{grade}")
@@ -285,15 +288,24 @@ def text_request(message):
                 # теперь надо ввести класс ещё раз
         elif message.chat.id in waiting_teacher and waiting_teacher[message.chat.id]: # ждём ввод фамилии в этом чате
             teacher = message.text.lower()
-            if teacher in teachers:
+            if teacher in teachers: # если верно введена
                 del waiting_teacher[message.chat.id] # удаляем этот чат из списка тех где ожидаем ввод фамилии
                 user_teacher[message.chat.id] = teacher
                 send_days(message.chat.id, teacher) # просим выбрать день недели
             else:
                 bot.reply_to(message, '❌ Неправильно введена фамилия. Введите ещё раз без пробелов. Примеры: "Зачиняев", "прадун"')
                 # ждём ввода опять
+        elif message.chat.id in waiting_location_teacher and waiting_location_teacher[message.chat.id]: # ждём ввод фамилии для поиска
+            teacher_name = message.text.strip()
+            if not teacher_name: # если пустое соо
+                bot.reply_to(message, '❌ Введите фамилию учителя.')
+                return
+            cab, lesson_num, status = find_location(teacher_name) # ищём где он
+            send_teacher_location(message.chat.id, teacher_name, cab, lesson_num, status) # выводим пользователю
+            if status == 'found': # если нашли - убираем чат из списка
+                waiting_location_teacher.pop(message.chat.id, None)
         else:
             # если ваще хрень какая то, то просим начать заново всё
-            bot.reply_to(message, '😬 Произошла ошибка. Пожалуйста, выберите роль через команду "/menu"')
+            bot.reply_to(message, '😬 Произошла ошибка. Пожалуйста, выберите заново роль через команду "/menu"')
     except Exception as e:
         logger.error(f"text_request упала из-за {e} от {message.from_user.username}")
