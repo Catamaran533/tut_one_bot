@@ -68,6 +68,12 @@ day_cuts_reverse = {
 days_map = {0: 'ПН', 1: 'ВТ', 2: 'СР', 3: 'ЧТ', 4: 'ПТ', 5: 'СБ', 6: 'ВС'}
 teachers = {i for i in MAP_WITH_TEACHERS_NAMES.keys()} # все учителя
 admins = {'ProArtem567', 'mishagrib', 'dzaicev'} # админы бота
+vacations = [
+    {'name': 'Осенние', 'start': '26-10-2025', 'end': '04-11-2025'},
+    {'name': 'Зимние', 'start': '31-12-2025', 'end': '11-01-2026'},
+    {'name': 'Весенние', 'start': '29-03-2026', 'end': '05-04-2026'},
+    {'name': 'Летние', 'start': '27-05-2026', 'end': '31-08-2026'}
+]
 
 UPDATE_TIME_MINUTES = 10 # время обновления расписаний на фоне
 schedule = ClassesTable() # расписание для учеников

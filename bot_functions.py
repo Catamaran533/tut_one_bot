@@ -4,6 +4,7 @@ from TeachersTable import *
 from TeachersLesson import *
 from message_sender import send_schedule, send_days
 from teacher_location import *
+from vacation_counter import show_vacation
 
 def get_menu_keyboard(): # функция, чтобы кнопка "/menu" отображалась снизу
     markup = types.ReplyKeyboardMarkup(resize_keyboard=True, one_time_keyboard=False)
@@ -76,7 +77,8 @@ def help_user(message):
             "/start – начать работу с ботом\n"
             "/menu или /меню - выйти обратно в главное меню с выбором роли\n"
             "/help или /помощь – получить справку при непонимании\n"
-            "/notifications или /уведомления – включить/выключить уведомления об изменениях в расписании\n\n"
+            "/notifications или /уведомления – включить/выключить уведомления об изменениях в расписании\n"
+            "/vacation или /каникулы – узнать, сколько времени осталось до каникул ⏰\n\n"
             "После ввода /menu выберите роль - ученик или учитель. После чего введите класс для ученика либо фамилию для учителя.\n"
             "Если вы выбрали школьника, то выберите ещё группу по математике и по английскому(в случае ошибки эти настройки можно изменить)\n"
             "Теперь осталось только выбрать день недели и всё!"
