@@ -50,6 +50,7 @@ def show_menu(message): # главное меню бота
         waiting_grade.pop(chat_id, None)
         waiting_teacher.pop(chat_id, None)
         waiting_location_teacher.pop(chat_id, None)
+        waiting_teacher_contacts.pop(chat_id, None)
         markup = types.InlineKeyboardMarkup() # кнопки
         site_button = types.InlineKeyboardButton('Открыть общее расписание', url='https://clck.ru/3QZjCY') # расписание
         markup.row(site_button)
@@ -58,10 +59,13 @@ def show_menu(message): # главное меню бота
         markup.row(student_role, teacher_role)
         location_btn = types.InlineKeyboardButton('📍 Узнать, где учитель', callback_data='teacher_location')
         markup.row(location_btn)
+        info_btn = types.InlineKeyboardButton('📞 Контакты учителя', callback_data='teacher_info')
+        markup.row(info_btn)
         bot.send_message(
             message.chat.id,
             '👀 Вы можете увидеть общее расписание уроков, либо посмотреть специализированный вариант специально для Вас - для этого выберите роль - 🧑‍🎓школьник(родитель школьника) или 👩‍🏫учитель.\n\n'
-            '📍 Также вы можете быстро узнать, в каком кабинете находится учитель прямо сейчас!',
+            '📍 Также вы можете быстро узнать, в каком кабинете находится учитель прямо сейчас!\n'
+            '📞 А также узнать контакты нужного преподавателя для связи',
             reply_markup=markup,
             parse_mode='HTML'
         )
@@ -261,6 +265,18 @@ def callback_answer(call):
                 reply_markup=None
             )
 
+        elif call.data == 'teacher_info': # узнать инфу о преподе
+            waiting_teacher_contacts[call.message.chat.id] = True
+            waiting_grade.pop(call.message.chat.id, None)
+            waiting_teacher.pop(call.message.chat.id, None)
+            waiting_location_teacher.pop(call.message.chat.id, None)
+            bot.edit_message_text(
+                chat_id=call.message.chat.id,
+                message_id=call.message.message_id,
+                text='📞 Введите фамилию учителя (регистр не важен):\nНапример: вдовиЧЕНко, Клюев, АБАКУМОВА',
+                reply_markup=None
+            )
+
     except Exception as e:
         logger.error(f"callback_answer упала из-за {e} от {call.from_user.username}")
 
@@ -306,6 +322,13 @@ def text_request(message):
             send_teacher_location(message.chat.id, teacher_name, cab, lesson_num, status) # выводим пользователю
             if status == 'found': # если нашли - убираем чат из списка
                 waiting_location_teacher.pop(message.chat.id, None)
+        elif message.chat.id in waiting_teacher_contacts and waiting_teacher_contacts[message.chat.id]: # ждём ввода фамилии для инфы
+            waiting_teacher_contacts.pop(message.chat.id, None)
+            teacher_name = message.text.strip().lower()
+            if teacher_name in TEACHER_CONTACTS:
+                bot.reply_to(message, f"✅ Найдена информация:\n\n{TEACHER_CONTACTS[teacher_name]}")
+            else:
+                bot.reply_to(message, f"❌ Фамилия «{teacher_name}» написана неверно.\n Проверьте написание или введите /menu")
         else:
             # если ваще хрень какая то, то просим начать заново всё
             bot.reply_to(message, '😬 Произошла ошибка. Пожалуйста, выберите заново роль через команду "/menu"')
