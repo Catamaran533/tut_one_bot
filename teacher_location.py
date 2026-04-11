@@ -14,6 +14,7 @@ def parse_lesson_time(time_str): # парсинг времени урока
             return None, None
         start_str = parts[0].strip().replace('.', ':')
         end_str = parts[1].strip().replace('.', ':')
+        # время начала и конца
         start_parts = start_str.split(':')
         end_parts = end_str.split(':')
         if len(start_parts) == 2 and len(start_parts[0]) == 1:
@@ -22,6 +23,7 @@ def parse_lesson_time(time_str): # парсинг времени урока
             end_str = '0' + end_str
         start_time = datetime.strptime(start_str, '%H:%M').time()
         end_time = datetime.strptime(end_str, '%H:%M').time()
+        # делаем это в формат времени питоновский
         return start_time, end_time
     except Exception as e:
         logger.error(f"parse_lesson_time ошибка: {e} для '{time_str}'")
@@ -36,7 +38,7 @@ def find_location(teacher_name):
                 teacher_found = t
                 break
         if not teacher_found:
-            return None, None, 'teacher_not_found'
+            return None, None, 'teacher_not_found' # не нашли препода
         current_weekday = datetime.now().weekday()
         day_cut = days_map.get(current_weekday, 'ПН')
         current_time = datetime.now().time()
@@ -45,7 +47,7 @@ def find_location(teacher_name):
         has_lessons_today = False
         lessons_started = False
         for i in range(8):
-            lesson = teachers_schedule.get_teachers_lesson(teacher_found, day_cut, i)
+            lesson = teachers_schedule.get_teachers_lesson(teacher_found, day_cut, i) # урок номер i в этот день у нужного учителя
             if not lesson:
                 continue
             lesson_name = lesson.get_lesson_name()
@@ -58,17 +60,18 @@ def find_location(teacher_name):
                 continue
             if current_time >= start_time:
                 lessons_started = True
-                if end_time and current_time >= end_time:
+                if end_time and current_time >= end_time: # урок закончился
                     cabs = lesson.get_cabs()
                     if cabs and len(cabs) > 0:
                         last_lesson_cab = cabs[0]
                         last_lesson_num = i + 1
                 else:
-                    cabs = lesson.get_cabs()
+                    cabs = lesson.get_cabs() # урок прям щас
                     if cabs and len(cabs) > 0:
                         last_lesson_cab = cabs[0]
                         last_lesson_num = i + 1
                     return last_lesson_cab, last_lesson_num, 'found'
+        # выбираем статус который надо вернуть
         if not has_lessons_today:
             return None, None, 'no_lessons_today'
         if not lessons_started:
