@@ -106,8 +106,6 @@ def toggle_notifications(message):
 
 @bot.callback_query_handler(func=lambda call: True) # ответ на функции кнопок
 def callback_answer(call):
-    if call.from_user.username == 'Anton1991ASDF':
-        return
     try:
         bot.answer_callback_query(call.id)
         waiting_grade.pop(call.message.chat.id, None)

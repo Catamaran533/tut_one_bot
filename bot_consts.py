@@ -6,10 +6,12 @@ from telebot import apihelper
 import socks
 import logging
 
+apihelper.CONNECT_TIMEOUT = 60
+apihelper.READ_TIMEOUT = 60
+
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(message)s')
 logger = logging.getLogger('SchoolBot')
 
-# --- ПРОКСИ ---
 PROXY_HOST = '105.214.33.111'
 PROXY_PORT = 5678
 # Прокси SOCKS4 (без логина/пароля)

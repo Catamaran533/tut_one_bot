@@ -1,14 +1,16 @@
 from bot_consts import *
 from datetime import datetime
 
-def get_vacation_countdown():
+def get_vacation_countdown(): # внутренний подсчет
     try:
         now = datetime.now()
         current_date = now.date()
-        for vac in vacations:
+        # берём время щас
+        for vac in vacations: # перебираем каникулы
             start = datetime.strptime(vac['start'], '%d-%m-%Y').date()
             end = datetime.strptime(vac['end'], '%d-%m-%Y').date()
-            if start <= current_date <= end:
+            # получаем время каникул
+            if start <= current_date <= end: # каникулы сейчас
                 end_datetime = datetime.strptime(vac['end'] + ' 23:59:59', '%d-%m-%Y %H:%M:%S')
                 delta = end_datetime - now
                 days = delta.days
@@ -23,7 +25,7 @@ def get_vacation_countdown():
 
         for vac in vacations:
             start = datetime.strptime(vac['start'], '%d-%m-%Y')
-            if start > now:
+            if start > now: # это следующие каникулы
                 delta = start - now
                 days = delta.days
                 hours = delta.seconds // 3600
@@ -35,7 +37,7 @@ def get_vacation_countdown():
                     f"📅 {days} дн. {hours} ч. {minutes} мин. {seconds} сек.\n\n"
                     f"📅 Начало: {vac['start']}"
                 )
-        return "🎓 Учебный год завершён! Следующие каникулы — осенние 2026."
+        return "🎓 Учебный год завершён! Следующие каникулы — осенние 2026." # если нет каникул
     except Exception as e:
         logger.error(f"get_vacation_countdown ошибка: {e}")
         return "⚠️ Ошибка при расчёте каникул"

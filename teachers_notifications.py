@@ -1,15 +1,16 @@
 from bot_consts import *
 import threading
 import time
+# по сути всё как в уведомлении учеников
 
 def delete_message_later(chat_id, message_id, delay=3600):
-    def _delete():
+    def delete_mes():
         time.sleep(delay)
         try:
             bot.delete_message(chat_id, message_id)
         except:
             pass
-    thread = threading.Thread(target=_delete)
+    thread = threading.Thread(target=delete_mes)
     thread.start()
 
 def notify_teachers(changes):
