@@ -12,12 +12,7 @@ apihelper.READ_TIMEOUT = 60
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(message)s')
 logger = logging.getLogger('SchoolBot')
 
-PROXY_HOST = '105.214.33.111'
-PROXY_PORT = 5678
-# Прокси SOCKS4 (без логина/пароля)
-apihelper.proxy = {
-    'https': f'socks4://{PROXY_HOST}:{PROXY_PORT}'
-}
+telebot.apihelper.proxy = {'https': 'socks4://171.99.147.85:4153'}
 
 TOKEN = '8275369590:AAGkscc0P7PDBLGmiIfus73IVj2zRB2pgkM' # токен бота
 bot = telebot.TeleBot(token=TOKEN) # бот - @UrokPlusBot
