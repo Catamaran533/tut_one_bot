@@ -2,19 +2,12 @@ import telebot
 from ClassesTable import *
 from TeachersTable import *
 from TeachersLesson import *
-from telebot import apihelper
-import socks
 import logging
-
-apihelper.CONNECT_TIMEOUT = 60
-apihelper.READ_TIMEOUT = 60
 
 logging.basicConfig(level=logging.ERROR, format='%(asctime)s - %(message)s')
 logger = logging.getLogger('SchoolBot')
 
-telebot.apihelper.proxy = {'https': 'socks4://171.99.147.85:4153'}
-
-TOKEN = '8275369590:AAGkscc0P7PDBLGmiIfus73IVj2zRB2pgkM' # токен бота
+TOKEN = '8275369590:AAH-vk6mkJbvL0YKBUwuY5PECAD6GrzPIWk' # токен бота
 bot = telebot.TeleBot(token=TOKEN) # бот - @UrokPlusBot
 grades = ['5мл', '6мл', '7мл', '8м', '8хб', '8г', '9м', '9хб', '9г', '10м', '10хб', '10г', '11м', '11хб', '11г'] # все классы
 waiting_grade = {} # ожидаем ли ввод класса в этом чате
